@@ -1,2 +1,3 @@
-# TReview
-Movie review platform built on React, Node, Express, MySQL stack.
+# Roadrunner
+Where dreams meet miles
+Join the movement today
