@@ -26,7 +26,7 @@ const fetch = require("node-fetch");
 
 
 
-const CreateEvent = () => {
+const AddEvent = () => {
 
   // New code below
 
@@ -197,4 +197,4 @@ const CreateEvent = () => {
   )
 }
 
-export default CreateEvent;
+export default AddEvent;
