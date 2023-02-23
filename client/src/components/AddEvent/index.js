@@ -83,9 +83,15 @@ const AddEvent = () => {
     }
     */
 
+  // Need to add function to verify inputs
+
+  const verifyInputs = () => {
+    
+  }  
+
   // Function to handle saving the new event, it must first verify there is input for each field, then call API to send to DB, then return to home
   const onSave = () => {
-    // function to be added here to verify input
+    //verifyInputs();
     //addEvent();
     history.push('/');
   }

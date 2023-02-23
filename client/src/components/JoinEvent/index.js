@@ -19,6 +19,8 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import history from '../Navigation/history';
+import { Alert, AlertTitle } from '@mui/material';
+import Modal from '@mui/material/Modal';
 
 //Dev mode
 const serverURL = ""; //enable for dev mode
@@ -124,13 +126,33 @@ const JoinEvent = () => {
       });
     }
     */
-    
+
+  // Need to add function to verify selected event
+
+  const verifyInputs = () => {
+    if(selectedEvent == ""){
+      handleOpenNoEvent();
+    } else {
+      //joinEvent();
+      history.push('/');
+    }
+  }
+
+  // Stateful variable for modal, and functions to open and close
+
+  const [openNoEvent, setNoEvent] = React.useState(false);
+
+  const handleOpenNoEvent = () => {
+    setNoEvent(true);
+  };
+
+  const handleCloseNoEvent = () => {
+    setNoEvent(false);
+  };
 
   // This will call function to verify input, and then send data back to sql to be stored, then redirect user to homepage
   const onClickJoin = () => {
-    // Add function here to verify input and present modal if no movie selected
-    // joinEvent();
-    history.push('/');
+    verifyInputs();
   }
 
   // Redirect user to homepage on cancel
@@ -206,6 +228,21 @@ const JoinEvent = () => {
         </Button>
       </Box>
     </Grid>
+    <Grid item>
+        <Modal
+          open={openNoEvent}
+          onClose={handleCloseNoEvent}
+          aria-labelledby="no-event-modal"
+          aria-describedby="no-event-modal-desc"
+        >
+          <Alert 
+            severity="error"
+            variant="filled"
+          >
+            Please select an event!
+          </Alert>
+        </Modal>
+      </Grid>
     </MuiThemeProvider>
   );
 }
