@@ -11,6 +11,9 @@ import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 import { MuiThemeProvider } from "@material-ui/core/styles";
 import history from '../Navigation/history';
+import Grid from '@mui/material/Grid';
+import { Alert, AlertTitle } from '@mui/material';
+import Modal from '@mui/material/Modal';
 
 //Dev mode
 const serverURL = ""; //enable for dev mode
@@ -86,14 +89,59 @@ const AddEvent = () => {
   // Need to add function to verify inputs
 
   const verifyInputs = () => {
-    
-  }  
+    var anyErrors = false;
+    if(eventName == ""){
+      handleOpenNoName();
+      anyErrors = true;
+    }
+    if(eventDate == ""){
+      handleOpenNoDate();
+      anyErrors = true;
+    }
+    if(eventLocation == ""){
+      handleOpenNoLocation();
+      anyErrors = true;
+    }
+    if(anyErrors == 0) {
+      //addEvent();
+      history.push('/');
+    }
+  }
+
+  // Stateful variables for modal for each of the fields if they are left blank
+  const [openNoName, setNoName] = React.useState(false);
+
+  const handleOpenNoName = () => {
+    setNoName(true);
+  };
+
+  const handleCloseNoName = () => {
+    setNoName(false);
+  };
+
+  const [openNoDate, setNoDate] = React.useState(false);
+
+  const handleOpenNoDate = () => {
+    setNoDate(true);
+  };
+
+  const handleCloseNoDate = () => {
+    setNoDate(false);
+  };
+
+  const [openNoLocation, setNoLocation] = React.useState(false);
+
+  const handleOpenNoLocation = () => {
+    setNoLocation(true);
+  };
+
+  const handleCloseNoLocation = () => {
+    setNoLocation(false);
+  };
 
   // Function to handle saving the new event, it must first verify there is input for each field, then call API to send to DB, then return to home
   const onSave = () => {
-    //verifyInputs();
-    //addEvent();
-    history.push('/');
+    verifyInputs();
   }
 
   // When cancelled, need to return to home
@@ -104,7 +152,12 @@ const AddEvent = () => {
   return (
     <>
     <MuiThemeProvider theme={theme}>
-      <SiteHeader/>
+    <Grid
+      container
+      spacing={0}
+      direction="column"
+    >
+    <SiteHeader/>
     <Box sx={{p: 2}}>
       <Typography variant="h5" color="inherit" noWrap>
         Create Event:
@@ -160,6 +213,52 @@ const AddEvent = () => {
         Cancel
       </Button>
     </Box>
+    <Grid item>
+        <Modal
+          open={openNoName}
+          onClose={handleCloseNoName}
+          aria-labelledby="no-name-modal"
+          aria-describedby="no-name-modal-desc"
+        >
+          <Alert 
+            severity="error"
+            variant="filled"
+          >
+            Please enter an event name!
+          </Alert>
+        </Modal>
+      </Grid> 
+      <Grid item>
+        <Modal
+          open={openNoDate}
+          onClose={handleCloseNoDate}
+          aria-labelledby="no-date-modal"
+          aria-describedby="no-date-modal-desc"
+        >
+          <Alert 
+            severity="error"
+            variant="filled"
+          >
+            Please enter an event date!
+          </Alert>
+        </Modal>
+      </Grid> 
+      <Grid item>
+        <Modal
+          open={openNoLocation}
+          onClose={handleCloseNoLocation}
+          aria-labelledby="no-location-modal"
+          aria-describedby="no-location-modal-desc"
+        >
+          <Alert 
+            severity="error"
+            variant="filled"
+          >
+            Please enter an event location!
+          </Alert>
+        </Modal>
+      </Grid> 
+      </Grid>
       </MuiThemeProvider>
     </>
   )
