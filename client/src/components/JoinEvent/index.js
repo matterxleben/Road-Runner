@@ -38,11 +38,10 @@ const JoinEvent = () => {
 
   // Stateful variable for list of events which will be returned from getEvents API
 
-  //const [events, setEvents] = React.useState([]);
+  const [events, setEvents] = React.useState([]);
 
   // API to return list of events
-
-  /*
+  
   const callApiGetEvents = async () => {
     const url = serverURL + "/api/getEvents";
 
@@ -75,9 +74,9 @@ const JoinEvent = () => {
   }
 
   React.useEffect(() => {
+    console.log("Calling getEvents API");
     getEvents();
   }, []);
-  */
 
   // Stateful variables for selected event from dropdown and its ID
   const [selectedEvent, setSelectedEvent] = React.useState("");
@@ -197,7 +196,7 @@ const JoinEvent = () => {
             onChange={handleChangedEvent}
             color="secondary"
           >
-          {eventDemo.map((item, key) => {
+          {events.map((item, key) => {
             return (
               <MenuItem
                 data-id={item.id}
