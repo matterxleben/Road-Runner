@@ -133,7 +133,7 @@ const JoinEvent = () => {
     history.push('/');
   }
 
-  // This will reset selected event to nothing (happens automatically), and redirect user to homepage
+  // Redirect user to homepage on cancel
   const onClickCancel = () => {
     history.push('/');
   }
@@ -211,37 +211,3 @@ const JoinEvent = () => {
 }
 
 export default JoinEvent;
-
-// Old radio button code for selecting genres
-/*
-<Box sx={{p: 2}}>
-      <Typography variant="h7">
-          This page will return the top 5 highest rated movies for the genre of your choice (genres drama, action, and adventure have enough reviews to give a good example).
-      </Typography>
-      </Box>
-      <FormControl>
-      <Box sx={{p: 2}}>
-        <FormLabel id="rating-radio-buttons-group-label">Click one of the buttons below and hit search!</FormLabel>
-      </Box>
-      <Box sx={{p: 2}}>
-      <RadioGroup
-          aria-labelledby="rating-radio-buttons-group-label"
-          name="rating-radio-buttons-group"
-          value={chosenGenre}
-          onChange={handleChosenGenre}
-          row
-        >
-          {genres.map((item, key) => {
-              return (
-                <FormControlLabel
-                  value={item.genre}
-                  control={<Radio />} 
-                  label={item.genre}
-                />
-              )
-            })
-            }
-        </RadioGroup>
-      </Box>
-      </FormControl>
-      */

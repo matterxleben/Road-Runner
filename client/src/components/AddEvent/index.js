@@ -28,43 +28,28 @@ const fetch = require("node-fetch");
 
 const AddEvent = () => {
 
-  // New code below
+  // Declaring stateful variables for each of our fields of the event, as well as functions to handle changes to these
+  const[eventName, setEventName] = React.useState("");
+  const[eventDate, setEventDate] = React.useState("");
+  const[eventLocation, setEventLocation] = React.useState("");
 
-  const onSave = () => {
-    history.push('/');
+  const handleChangedName = (event) => {
+    setEventName(event.target.value);
   }
 
-  const onCancel = () => {
-    history.push('/');
+  const handleChangedDate = (event) => {
+    setEventDate(event.target.value);
   }
 
-  // New code above
+  const handleChangedLocation = (event) => {
+    setEventLocation(event.target.value);
+  }
 
+  // Declaring API to send inputted data to event table in DB
   
-  const[searchTitle, setSearchTitle] = React.useState("");
-  const[searchActor, setSearchActor] = React.useState("");
-  const[searchDirector, setSearchDirector] = React.useState("");
-
-  const handleChangedTitle = (event) => {
-    setSearchTitle(event.target.value);
-  }
-
-  const handleChangedActor = (event) => {
-    setSearchActor(event.target.value);
-  }
-
-  const handleChangedDirector = (event) => {
-    setSearchDirector(event.target.value);
-  }
-
-  const onSearch = () => {
-    getSearchedMovies();
-  }
-
-  const[searchedMovies, setSearchedMovies] = React.useState([]);
-
-  const callApiGetSearchedMovies = async () => {
-    const url = serverURL + "/api/getSearchedMovies";
+  /*
+  const callApiAddEvent = async () => {
+    const url = serverURL + "/api/addEvent";
 
     // waiting on response from api call of type POST which will be in the form of a json object
     const response = await fetch(url, {
@@ -73,30 +58,41 @@ const AddEvent = () => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        searchTitle: searchTitle,
-        searchActor: searchActor,
-        searchDirector: searchDirector
+        userID: 1, // In sprint 2 this will be set to the user ID
+        eventName: eventName,
+        eventDate: eventDate,
+        eventLocation: eventLocation
       })
     });
 
     const body = await response.json();
     if (response.status !== 200) throw Error(body.message);
-    console.log("Searched Movies: ", body);
+    console.log("Event Added Status: ", body);
     return body;
   }
 
-  const getSearchedMovies = () => {
-    callApiGetSearchedMovies()
+  const addEvent = () => {
+    callApiAddEvent()
       .then(res => {
 
         //printing to console what was returned
-        console.log("getSearchedMovies API Returned: " + res);
-        var parsedSearchedMovies = JSON.parse(res.express);
-        console.log("Searched Movie List Parsed: ", parsedSearchedMovies);
-
-        // sets stateful variable movies to the value of the list parsedMovies
-        setSearchedMovies(parsedSearchedMovies);
+        console.log("addEvent API Returned: " + res);
+        var parsedAddEventStatus = JSON.parse(res.express);
+        console.log("Event Added Status: ", parsedAddEventStatus);
       });
+    }
+    */
+
+  // Function to handle saving the new event, it must first verify there is input for each field, then call API to send to DB, then return to home
+  const onSave = () => {
+    // function to be added here to verify input
+    //addEvent();
+    history.push('/');
+  }
+
+  // When cancelled, need to return to home
+  const onCancel = () => {
+    history.push('/');
   }
 
   return (
@@ -114,8 +110,8 @@ const AddEvent = () => {
         id="movie-title" 
         label="Enter Event Name" 
         variant="standard" 
-        value={searchTitle}
-        onChange={handleChangedTitle}
+        value={eventName}
+        onChange={handleChangedName}
         inputProps={{ maxLength: 100 }}
         style={{color: "#000000"}}
       />
@@ -126,8 +122,8 @@ const AddEvent = () => {
         id="actor" 
         label="Enter Event Date" 
         variant="standard" 
-        value={searchActor}
-        onChange={handleChangedActor}
+        value={eventDate}
+        onChange={handleChangedDate}
         inputProps={{ maxLength: 100 }}
       />
     </Box>
@@ -137,8 +133,8 @@ const AddEvent = () => {
         id="movie-director" 
         label="Enter Event Location" 
         variant="standard" 
-        value={searchDirector}
-        onChange={handleChangedDirector}
+        value={eventLocation}
+        onChange={handleChangedLocation}
         inputProps={{ maxLength: 100 }}
       />
     </Box>
@@ -158,40 +154,6 @@ const AddEvent = () => {
         Cancel
       </Button>
     </Box>
-    <List>
-        {searchedMovies.map((item, key) => {
-              return (
-                <>
-                <Divider />
-                <ListItem>
-                  <ListItemText
-                    primary={item.name}
-                    secondary= {
-                    <List>
-                      <ListItem>
-                        <ListItemText
-                          primary={"By Director: " + item.directorFullName}
-                        />
-                      </ListItem>
-                      <ListItem>
-                        <ListItemText
-                          primary={"Average Review Score: " + item.average}
-                        />
-                      </ListItem>
-                      <ListItem>
-                        <ListItemText
-                          primary={"Reviews: " + item.reviewList}
-                        />
-                      </ListItem>
-                    </List>}
-                  />
-                </ListItem>
-                <Divider />
-                </>
-              )
-            })
-            }
-      </List>
       </MuiThemeProvider>
     </>
   )
