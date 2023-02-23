@@ -13,7 +13,30 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.use(express.static(path.join(__dirname, "client/build")));
 
+app.post('/api/getEvents', (req, res) => {
 
+	//create connection to sql, declare query in string
+	let connection = mysql.createConnection(config);
+	let sql = `SELECT eventID, name FROM event WHERE friendEvent = 0`;
+	console.log(sql);
+	let data = [];
+
+	// connecting to sql and using the query variable, turning data into JSON object and sending back as res
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message)
+		}
+
+		let string = JSON.stringify(results);
+
+		console.log(string);
+
+		res.send({express: string});
+	});
+	connection.end();
+});
+
+/*
 app.post('/api/loadUserSettings', (req, res) => {
 
 	let connection = mysql.createConnection(config);
@@ -32,30 +55,6 @@ app.post('/api/loadUserSettings', (req, res) => {
 		let string = JSON.stringify(results);
 		//let obj = JSON.parse(string);
 		res.send({ express: string });
-	});
-	connection.end();
-});
-
-
-app.post('/api/getMovies', (req, res) => {
-
-	//create connection to sql, declare query in string
-	let connection = mysql.createConnection(config);
-	let sql = `SELECT * FROM movies`;
-	console.log(sql);
-	let data = [];
-
-	// connecting to sql and using the query variable, turning data into JSON object and sending back as res
-	connection.query(sql, data, (error, results, fields) => {
-		if (error) {
-			return console.error(error.message)
-		}
-
-		let string = JSON.stringify(results);
-
-		console.log(string);
-
-		res.send({express: string});
 	});
 	connection.end();
 });
@@ -209,6 +208,8 @@ app.post('/api/getSearchedMovies', (req, res) => {
 	});
 	connection.end();
 });
+
+*/
 
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
