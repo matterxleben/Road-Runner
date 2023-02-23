@@ -34,88 +34,15 @@ const fetch = require("node-fetch");
 
 const JoinEvent = () => {
 
-  // New code below ------------------------------------
-
   // Stateful variable for list of events which will be returned from getEvents API
 
   //const [events, setEvents] = React.useState([]);
 
-  const eventDemo = [
-    {name: "Toronto Marathon", id: 1},
-    {name: "Boston Marathon", id: 2},
-    {name: "New York Marathon", id: 3},
-    {name: "Miami Marathon", id: 4}
-  ];
+  // API to return list of events
 
-  //setEvents(eventDemo);
-
-  // Stateful variables for selected event and its ID
-  const [selectedEvent, setSelectedEvent] = React.useState("");
-
-  const[eventID, setEventID] = React.useState("");
-
-  const handleChangedEvent = (event) => {
-    setSelectedEvent(event.target.value);
-    setEventID(event.currentTarget.dataset.id);
-    console.log("Event Name: " + selectedEvent);
-    console.log("Event ID: " + eventID);
-  };
-
-  // This will call function to verify input, and then send data back to sql to be stored, then redirect user to homepage
-  const onClickJoin = () => {
-    history.push('/');
-  }
-
-  // This will reset selected event to nothing, and redirect user to homepage
-  const onClickCancel = () => {
-    history.push('/');
-  }
-
-  // New code above ------------------------------------
-
-  /*  
-  const [topMovies, setTopMovies] = React.useState([]);
-
-  const[chosenGenre, setChosenGenre] = React.useState("");
-
-  const [genres, setGenres] = React.useState([]);
-
-  const callApiGetTopMovies = async () => {
-    const url = serverURL + "/api/getTopMovies";
-
-    // waiting on response from api call of type POST which will be in the form of a json object
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        chosenGenre: chosenGenre
-      })
-    });
-
-    const body = await response.json();
-    if (response.status !== 200) throw Error(body.message);
-    console.log("Top Movies: ", body);
-    return body;
-  }
-
-  const getTopMovies = () => {
-    callApiGetTopMovies()
-      .then(res => {
-
-        //printing to console what was returned
-        console.log("getTopMovies API Returned: " + res);
-        var parsedTopMovies = JSON.parse(res.express);
-        console.log("Top Movie List Parsed: ", parsedTopMovies);
-
-        // sets stateful variable movies to the value of the list parsedMovies
-        setTopMovies(parsedTopMovies);
-      });
-  }
-  
-  const callApiGetGenres = async () => {
-    const url = serverURL + "/api/getGenres";
+  /*
+  const callApiGetEvents = async () => {
+    const url = serverURL + "/api/getEvents";
 
     // waiting on response from api call of type POST which will be in the form of a json object
     const response = await fetch(url, {
@@ -127,33 +54,98 @@ const JoinEvent = () => {
 
     const body = await response.json();
     if (response.status !== 200) throw Error(body.message);
-    console.log("Genres: ", body);
+    console.log("Events: ", body);
     return body;
   }
 
-  const getGenres = () => {
-    callApiGetGenres()
+  const getEvents = () => {
+    callApiGetEvents()
       .then(res => {
 
         //printing to console what was returned
-        console.log("getGenres API Returned: " + res);
-        var parsedGenres = JSON.parse(res.express);
-        console.log("Genres List Parsed: ", parsedGenres);
+        console.log("getEvents API Returned: " + res);
+        var parsedEvents = JSON.parse(res.express);
+        console.log("Events List Parsed: ", parsedEvents);
 
         // sets stateful variable movies to the value of the list parsedMovies
-        setGenres(parsedGenres);
+        setEvents(parsedEvents);
       });
   }
 
   React.useEffect(() => {
-    getGenres();
+    getEvents();
   }, []);
-  
-
-  const handleChosenGenre = (event) => {
-    setChosenGenre(event.target.value);
-  }
   */
+
+  // Stateful variables for selected event from dropdown and its ID
+  const [selectedEvent, setSelectedEvent] = React.useState("");
+
+  const[eventID, setEventID] = React.useState("");
+
+  const handleChangedEvent = (event) => {
+    setSelectedEvent(event.target.value);
+    setEventID(event.currentTarget.dataset.id);
+    console.log("Event Name: " + selectedEvent);
+    console.log("Event ID: " + eventID);
+  };
+
+  // API to send selected event back to database with the user's ID
+
+  /*
+  const callApiJoinEvent = async () => {
+    const url = serverURL + "/api/joinEvent";
+
+    // waiting on response from api call of type POST which will be in the form of a json object
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        userID: 1, // In sprint 2 this will be set to the user ID
+        eventID: eventID
+      })
+    });
+
+    const body = await response.json();
+    if (response.status !== 200) throw Error(body.message);
+    console.log("Event Joined Status: ", body);
+    return body;
+  }
+
+  const joinEvent = () => {
+    callApiJoinEvent()
+      .then(res => {
+
+        //printing to console what was returned
+        console.log("joinEvent API Returned: " + res);
+        var parsedJoinEventStatus = JSON.parse(res.express);
+        console.log("Event Joined Status: ", parsedJoinEventStatus);
+      });
+    }
+    */
+    
+
+  // This will call function to verify input, and then send data back to sql to be stored, then redirect user to homepage
+  const onClickJoin = () => {
+    // Add function here to verify input and present modal if no movie selected
+    // joinEvent();
+    history.push('/');
+  }
+
+  // This will reset selected event to nothing (happens automatically), and redirect user to homepage
+  const onClickCancel = () => {
+    history.push('/');
+  }
+
+  // Test Data (TO BE REMOVED)
+
+  const eventDemo = [
+    {name: "Toronto Marathon", id: 1},
+    {name: "Boston Marathon", id: 2},
+    {name: "New York Marathon", id: 3},
+    {name: "Miami Marathon", id: 4}
+  ];
 
   return (
     <MuiThemeProvider theme={theme}>
@@ -217,40 +209,6 @@ const JoinEvent = () => {
     </MuiThemeProvider>
   );
 }
-
-/*
-const EventSelection = ({selectedEvent, handleChangedEvent, events}) => {
-  return (
-    <Grid item>
-        <Box sx={{ minWidth: 500 }}>
-          <FormControl fullWidth>
-            <InputLabel id="select-movie-label">Select an Event</InputLabel>
-            <Select
-              labelId="select-event-label-id"
-              id="select-event-label"
-              value={selectedEvent}
-              label="Select an Event"
-              onChange={handleChangedEvent}
-              color="secondary"
-            >
-            {events.map((item, key) => {
-              return (
-                <MenuItem
-                  data-id={item.id}
-                  value={item.name}
-                >
-                  {item.name}
-                </MenuItem>
-              )
-            })
-            }
-            </Select>
-         </FormControl>
-        </Box>
-      </Grid>
-  );
-}
-*/
 
 export default JoinEvent;
 
