@@ -169,7 +169,7 @@ const JoinEvent = () => {
         color="inherit" 
         noWrap
         >
-          Join an Event:
+          Join Event:
         </Typography>
       </Box>
       <Box sx={{ width: 1/2, p: 2 }}>
