@@ -9,7 +9,7 @@ const AddRun= () => {
         <>
         <MuiThemeProvider theme={theme}>
           <SiteHeader/>
-          </MuiThemeProvider>
+        </MuiThemeProvider>
         </>
       )
 

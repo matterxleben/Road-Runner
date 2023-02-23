@@ -4,7 +4,6 @@ import Home from '../Home';
 import SignIn from '../SignIn';
 import Landing from '../Landing';
 import history from './history';
-import Reviews from '../Reviews';
 import JoinEvent from '../JoinEvent';
 import AddEvent from "../AddEvent";
 import AddFriend from "../AddFriend";
