@@ -1,0 +1,8 @@
+﻿.empty-table-grid {
+    border-collapse: collapse; /* merge borders */
+}
+
+    .empty-table-grid th,
+    .empty-table-grid td {
+        border: 1px solid black; /* add border to cells */
+    }
