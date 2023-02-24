@@ -50,7 +50,6 @@ const AddEvent = () => {
 
   // Declaring API to send inputted data to event table in DB
   
-  /*
   const callApiAddEvent = async () => {
     const url = serverURL + "/api/addEvent";
 
@@ -61,7 +60,6 @@ const AddEvent = () => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        userID: 1, // In sprint 2 this will be set to the user ID
         eventName: eventName,
         eventDate: eventDate,
         eventLocation: eventLocation
@@ -78,13 +76,8 @@ const AddEvent = () => {
     callApiAddEvent()
       .then(res => {
 
-        //printing to console what was returned
-        console.log("addEvent API Returned: " + res);
-        var parsedAddEventStatus = JSON.parse(res.express);
-        console.log("Event Added Status: ", parsedAddEventStatus);
       });
     }
-    */
 
   // Need to add function to verify inputs
 
@@ -103,7 +96,7 @@ const AddEvent = () => {
       anyErrors = true;
     }
     if(anyErrors == 0) {
-      //addEvent();
+      addEvent();
       history.push('/');
     }
   }
@@ -178,9 +171,8 @@ const AddEvent = () => {
     <Box sx={{ width: 1/2, p: 2}}>
       <TextField 
         fullWidth 
-        id="actor" 
-        label="Enter Event Date" 
-        variant="standard" 
+        id="actor"
+        type= "date"
         value={eventDate}
         onChange={handleChangedDate}
         inputProps={{ maxLength: 100 }}

@@ -50,7 +50,10 @@ const JoinEvent = () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
-      }
+      },
+      body: JSON.stringify({
+        userID: 1, // In sprint 2 this will be set to the user ID
+      })
     });
 
     const body = await response.json();
@@ -79,20 +82,19 @@ const JoinEvent = () => {
   }, []);
 
   // Stateful variables for selected event from dropdown and its ID
-  const [selectedEvent, setSelectedEvent] = React.useState("");
+  const [selectedEvent, setSelectedEvent] = React.useState();
 
   const[eventID, setEventID] = React.useState("");
 
   const handleChangedEvent = (event) => {
     setSelectedEvent(event.target.value);
-    setEventID(event.currentTarget.dataset.id);
+    setEventID(event.target.value.eventID);
     console.log("Event Name: " + selectedEvent);
     console.log("Event ID: " + eventID);
   };
 
   // API to send selected event back to database with the user's ID
 
-  /*
   const callApiJoinEvent = async () => {
     const url = serverURL + "/api/joinEvent";
 
@@ -117,22 +119,16 @@ const JoinEvent = () => {
   const joinEvent = () => {
     callApiJoinEvent()
       .then(res => {
-
-        //printing to console what was returned
-        console.log("joinEvent API Returned: " + res);
-        var parsedJoinEventStatus = JSON.parse(res.express);
-        console.log("Event Joined Status: ", parsedJoinEventStatus);
       });
     }
-    */
 
-  // Need to add function to verify selected event
+  // Function to verify selected event
 
   const verifyInputs = () => {
     if(selectedEvent == ""){
       handleOpenNoEvent();
     } else {
-      //joinEvent();
+      joinEvent();
       history.push('/');
     }
   }
@@ -159,15 +155,6 @@ const JoinEvent = () => {
     history.push('/');
   }
 
-  // Test Data (TO BE REMOVED)
-
-  const eventDemo = [
-    {name: "Toronto Marathon", id: 1},
-    {name: "Boston Marathon", id: 2},
-    {name: "New York Marathon", id: 3},
-    {name: "Miami Marathon", id: 4}
-  ];
-
   return (
     <MuiThemeProvider theme={theme}>
     <Grid
@@ -191,7 +178,7 @@ const JoinEvent = () => {
           <Select
             labelId="select-event-label-id"
             id="select-event-label"
-            value={selectedEvent}
+            value={selectedEvent ?? ""}
             label="Select an Event"
             onChange={handleChangedEvent}
             color="secondary"
@@ -199,8 +186,8 @@ const JoinEvent = () => {
           {events.map((item, key) => {
             return (
               <MenuItem
-                data-id={item.id}
-                value={item.name}
+                //data-id={item.id}
+                value={item}
               >
                 {item.name}
               </MenuItem>
