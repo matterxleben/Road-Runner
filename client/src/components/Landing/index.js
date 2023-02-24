@@ -27,6 +27,8 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import { Alert, AlertTitle } from '@mui/material';
+import Modal from '@mui/material/Modal';
 
 //Dev mode
 const serverURL = ""; //enable for dev mode
@@ -122,20 +124,40 @@ const Landing = () => {
     { id: 3, name: 'Matthew Erxleben', runtitle: 'Rainy run', distance: 5, duration: '40:27', pace: '8:11', date: 'Feb 20, 2023', weather: 'Raining', location: 'Oakville', description:'Ok, wasnt the best'},
   ];
 
-  // This will call function to verify input, and then display data on 
-  const onClickLeaderboard = () => {
-    history.push('/');
+
+  const displayEvent = () => {
+    //callApidisplayEvent()
+    //  .then(res => {
+    //  });
+    }
+
+
+
+  // Function to verify selected event
+  const verifyInputs = () => {
+    if(selectedEvent == ""){
+      handleOpenNoEvent();
+    } else {
+      displayEvent();
+      history.push('/');
+    }
   }
 
-  // justifyContent="space-between" alignItems="center"
-  /*       
-  <Grid item xs={6}>
-  Item 1
-  </Grid>
-  <Grid item xs={6}>
-    Item 2
-  </Grid>
-  */
+  // Stateful variable for modal, and functions to open and close
+  const [openNoEvent, setNoEvent] = React.useState(false);
+
+  const handleOpenNoEvent = () => {
+    setNoEvent(true);
+  };
+
+  const handleCloseNoEvent = () => {
+    setNoEvent(false);
+  };
+
+  // This will call function to verify input, then display all information for that event on the landing page
+  const onClickDisplay = () => {
+    verifyInputs();
+  }
 
   return (
     <MuiThemeProvider theme={theme}>
@@ -188,7 +210,7 @@ const Landing = () => {
           <Box sx={{p: 2}}>
             <Button
                 variant="outlined"
-                onClick={onClickLeaderboard}
+                onClick={onClickDisplay}
               >
                 Display Leaderboard & Run Log
             </Button>
@@ -263,6 +285,19 @@ const Landing = () => {
           </Table>
         </TableContainer>
       </Box>
+      <Modal
+          open={openNoEvent}
+          onClose={handleCloseNoEvent}
+          aria-labelledby="no-event-modal"
+          aria-describedby="no-event-modal-desc"
+        >
+          <Alert 
+            severity="error"
+            variant="filled"
+          >
+            Please select an event!
+          </Alert>
+        </Modal>
     </Grid>
     </MuiThemeProvider>
   )
