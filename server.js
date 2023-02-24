@@ -98,6 +98,42 @@ app.post('/api/addEvent', (req, res) => {
 	connection.end();
 });
 
+
+
+// LANDING PAGE MATTS CODE
+
+app.post('/api/getEventsLanding', (req, res) => {
+	let userID = req.body.userID;
+
+	//create connection to sql, declare query in string
+	let connection = mysql.createConnection(config);
+	let sql = `SELECT eventID, name
+	FROM event
+	WHERE friendevent = 0
+	AND eventID IN (SELECT eventID FROM eventUser WHERE userID = ?)
+	UNION
+	SELECT eventID, "All Friends" as name
+	FROM event
+	WHERE friendevent = 1
+	AND userFriends = ?`;
+	console.log(sql);
+	let data = [userID, userID];
+
+	// connecting to sql and using the query variable, turning data into JSON object and sending back as res
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message)
+		}
+
+		let string = JSON.stringify(results);
+
+		console.log(string);
+
+		res.send({express: string});
+	});
+	connection.end();
+});
+
 /*
 app.post('/api/loadUserSettings', (req, res) => {
 

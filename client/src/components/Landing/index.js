@@ -28,7 +28,64 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 
+//Dev mode
+const serverURL = ""; //enable for dev mode
+
+//Deployment mode instructions
+//const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3039"; //enable for deployed mode; Change PORT to the port number given to you;
+//To find your port number: 
+//ssh to ov-research-4.uwaterloo.ca and run the following command: 
+//env | grep "PORT"
+//copy the number only and paste it in the serverURL in place of PORT, e.g.: const serverURL = "http://ov-research-4.uwaterloo.ca:3000";
+
+const fetch = require("node-fetch");
+
 const Landing = () => {
+
+  // Stateful variable for list of events which will be returned from getEventsLanding API
+  const [eventsLanding, setEventsLanding] = React.useState([]);
+
+  // API to return list of events
+  const callApiGetEventsLanding = async () => {
+    const url = serverURL + "/api/getEventsLanding";
+
+    // waiting on response from api call of type POST which will be in the form of a json object
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        userID: 1, // In sprint 2 this will be set to the user ID
+      })
+    });
+
+    const body = await response.json();
+    if (response.status !== 200) throw Error(body.message);
+    console.log("Events: ", body);
+    return body;
+  }
+
+  const getEventsLanding = () => {
+    callApiGetEventsLanding()
+      .then(res => {
+
+        //printing to console what was returned
+        console.log("getEventsLanding API Returned: " + res);
+        var parsedEventsLanding = JSON.parse(res.express);
+        console.log("Events List Landing Parsed: ", parsedEventsLanding);
+
+        // sets stateful variable movies to the value of the list parsedMovies
+        setEventsLanding(parsedEventsLanding);
+      });
+  }
+
+  React.useEffect(() => {
+    console.log("Calling getEventsLanding API");
+    getEventsLanding();
+  }, []);  
+
+
 
   const eventDemo = [
     {name: "All Friends", id: 1},
@@ -112,7 +169,7 @@ const Landing = () => {
                 onChange={handleChangedEvent}
                 color="secondary"
               >
-              {eventDemo.map((item, key) => {
+              {eventsLanding.map((item, key) => {
                 return (
                   <MenuItem
                     data-id={item.id}
