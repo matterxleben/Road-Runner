@@ -13,13 +13,15 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.use(express.static(path.join(__dirname, "client/build")));
 
+// gets a list of events which are not "friend events" and the user is not a part of for join events page dropdown
 app.post('/api/getEvents', (req, res) => {
+	let userID = req.body.userID;
 
 	//create connection to sql, declare query in string
 	let connection = mysql.createConnection(config);
-	let sql = `SELECT eventID, name FROM event WHERE friendEvent = 0`;
+	let sql = `SELECT eventID, name FROM event WHERE friendEvent = 0 AND eventID NOT IN (SELECT eventID FROM eventUser WHERE userID = ?)`;
 	console.log(sql);
-	let data = [];
+	let data = [userID];
 
 	// connecting to sql and using the query variable, turning data into JSON object and sending back as res
 	connection.query(sql, data, (error, results, fields) => {
@@ -28,6 +30,35 @@ app.post('/api/getEvents', (req, res) => {
 		}
 
 		let string = JSON.stringify(results);
+
+		console.log(string);
+
+		res.send({express: string});
+	});
+	connection.end();
+});
+
+// API to send users info to mysql to add them to an event
+app.post('/api/joinEvent', (req, res) => {
+	let userID = req.body.userID;
+	let eventID = req.body.eventID;
+	console.log("userID: " + userID);
+	console.log("eventID: " + eventID);
+
+	let connection = mysql.createConnection(config);
+
+	let sql = `INSERT INTO eventUser (userID, eventID) VALUES (?,?)`;
+	let data = [userID, eventID];
+
+	console.log(sql);
+	console.log(data);
+
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+
+		let string = "Event has been joined!"
 
 		console.log(string);
 
@@ -55,40 +86,6 @@ app.post('/api/loadUserSettings', (req, res) => {
 		let string = JSON.stringify(results);
 		//let obj = JSON.parse(string);
 		res.send({ express: string });
-	});
-	connection.end();
-});
-
-app.post('/api/addReview', (req, res) => {
-	let userID = req.body.userID;
-	let reviewTitle = req.body.reviewTitle;
-	let reviewContent = req.body.reviewContent;
-	let reviewScore = req.body.reviewScore;
-	let movieID = req.body.movieID;
-	console.log("UserID: " + userID);
-	console.log("Review Title: " + reviewTitle);
-	console.log("Review Content: " + reviewContent);
-	console.log("Review Score: " + reviewScore);
-	console.log("MovieID: " + movieID);
-
-	let connection = mysql.createConnection(config);
-
-	let sql = `INSERT INTO Review(userID, reviewTitle, reviewContent, reviewScore, movieID) VALUES (?, ?, ?, ?, ?)`;
-	let data = [userID, reviewTitle, reviewContent, reviewScore, movieID];
-
-	console.log(sql);
-	console.log(data);
-
-	connection.query(sql, data, (error, results, fields) => {
-		if (error) {
-			return console.error(error.message);
-		}
-
-		let string = "Record has been added!"
-
-		console.log(string);
-
-		res.send({express: string});
 	});
 	connection.end();
 });
