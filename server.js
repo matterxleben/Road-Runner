@@ -67,6 +67,37 @@ app.post('/api/joinEvent', (req, res) => {
 	connection.end();
 });
 
+// API to send new events info to add a new event
+app.post('/api/addEvent', (req, res) => {
+	let eventName = req.body.eventName;
+	let eventDate = req.body.eventDate;
+	let eventLocation = req.body.eventLocation;
+	console.log("Event Name: " + eventName);
+	console.log("Event Date: " + eventDate);
+	console.log("Event Location" + eventLocation);
+
+	let connection = mysql.createConnection(config);
+
+	let sql = `INSERT INTO event (name, date, location, friendEvent) VALUES (?, ?, ?, ?)`;
+	let data = [eventName, eventDate, eventLocation, 0];
+
+	console.log(sql);
+	console.log(data);
+
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+
+		let string = "Event has been created!"
+
+		console.log(string);
+
+		res.send({express: string});
+	});
+	connection.end();
+});
+
 /*
 app.post('/api/loadUserSettings', (req, res) => {
 
