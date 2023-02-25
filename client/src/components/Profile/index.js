@@ -26,6 +26,9 @@ import "./RunnerProfile.css"; // import CSS file
 import runnerPhoto from "./runner-photo.jpg"; // import image file
 
 import { Table, TableHead, TableBody, TableRow, TableCell, TableContainer} from '@material-ui/core';
+import { Alert, AlertTitle } from '@mui/material';
+import Modal from '@mui/material/Modal';
+import Paper from '@material-ui/core/Paper';
 
 
 //Dev mode
@@ -45,13 +48,9 @@ const fetch = require("node-fetch");
 
 const Profile = () => {
 
-    const onSave = () => { }
-
-    const name = "Abhinav Sondhi";
-    const description = "I'm a passionate runner and fitness enthusiast.";
-    const city = "Vaughan";
-    const height = "6'2";
-    const weight = "175 lbs";
+    const [profile, setProfile] = React.useState([]);
+    
+    
 
     const heights = [
         { name: "4'11", id: 1 },
@@ -77,14 +76,14 @@ const Profile = () => {
     ];
 
 
-    const [selectedHeight, setSelectedHeight] = React.useState("");
+    const [profileHeight, setProfileHeight] = React.useState("");
 
     const [heightID, setHeightID] = React.useState("");
 
     const handleChangedHeight = (event) => {
-        setSelectedHeight(event.target.value);
+        setProfileHeight(event.target.value);
         setHeightID(event.currentTarget.dataset.id);
-        console.log("Height: " + selectedHeight);
+        console.log("Height: " + profileHeight);
         console.log("Height ID: " + heightID);
     };
 
@@ -203,42 +202,40 @@ const Profile = () => {
 
     ];
 
-    const [selectedWeight, setSelectedWeight] = React.useState("");
+    const [profileWeight, setProfileWeight] = React.useState("");
 
     const [weightID, setWeightID] = React.useState("");
 
     const handleChangedWeight = (event) => {
-        setSelectedWeight(event.target.value);
+        setProfileWeight(event.target.value);
         setWeightID(event.currentTarget.dataset.id);
-        console.log("Weight: " + selectedWeight);
+        console.log("Weight: " + profileWeight);
         console.log("Weight ID: " + weightID);
     };
 
 
-    const [searchName, setSearchName] = React.useState("");
-    const [searchCity, setSearchCity] = React.useState("");
-    const [searchBio, setSearchBio] = React.useState("");
+    const [profileName, setProfileName] = React.useState("");
+    const [profileCity, setProfileCity] = React.useState("");
+    const [profileBio, setProfileBio] = React.useState("");
 
     const handleChangedName = (event) => {
-        setSearchName(event.target.value);
+        setProfileName(event.target.value);
     }
 
     const handleChangedCity = (event) => {
-        setSearchCity(event.target.value);
+        setProfileCity(event.target.value);
     }
 
     const handleChangedBio = (event) => {
-        setSearchBio(event.target.value);
+        setProfileBio(event.target.value);
     }
 
-    const onSearch = () => {
-        getSearchedMovies();
-    }
 
-    const [searchedMovies, setSearchedMovies] = React.useState([]);
+    
 
-    const callApiGetSearchedMovies = async () => {
-        const url = serverURL + "/api/getSearchedMovies";
+    // Declaring API to send inputted data to profile table in DB
+    const callApiUpdateProfile = async () => {
+        const url = serverURL + "/api/updateProfile";
 
         // waiting on response from api call of type POST which will be in the form of a json object
         const response = await fetch(url, {
@@ -247,62 +244,300 @@ const Profile = () => {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                searchName: searchName,
-                searchCity: searchCity,
-                searchBio: searchBio
+                profileName: profileName,
+                profileBio: profileBio,
+                profileCity: profileCity,
+                profileHeight: profileHeight,
+                profileWeight: profileWeight,
+                userID : 1,
+
             })
         });
 
         const body = await response.json();
         if (response.status !== 200) throw Error(body.message);
-        console.log("Searched Movies: ", body);
+        console.log("Profile update Status: ", body);
         return body;
     }
 
-    const getSearchedMovies = () => {
-        callApiGetSearchedMovies()
+    const updateProfile = () => {
+        console.log("updateProdile was called");
+        callApiUpdateProfile()
             .then(res => {
 
-                //printing to console what was returned
-                console.log("getSearchedMovies API Returned: " + res);
-                var parsedSearchedMovies = JSON.parse(res.express);
-                console.log("Searched Movie List Parsed: ", parsedSearchedMovies);
-
-                // sets stateful variable movies to the value of the list parsedMovies
-                setSearchedMovies(parsedSearchedMovies);
             });
     }
 
+
+    //profile details from getProfile API
+    const [currentProfile, setCurrentProfile] = React.useState([]);
+
+    // API to return current profile 
+    const callApiGetProfile = async () => {
+        const url = serverURL + "/api/getProfile";
+
+        // waiting on response from api call of type POST which will be in the form of a json object
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                userID: 1, // In sprint 2 this will be set to the user ID
+            })
+        });
+
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        console.log("Profile: ", body);
+        return body;
+    }
+
+    const getProfile = () => {
+        callApiGetProfile()
+            .then(res => {
+
+                //printing to console what was returned
+                console.log("getProfile API Returned: ", res);
+                var parsedProfile = JSON.parse(res.express);
+                console.log("Profile Parsed: ", parsedProfile);
+
+                // sets stateful variable movies to the value of the list parsedMovies
+
+                setCurrentProfile(parsedProfile);
+                console.log("Profile was set");
+            });
+    }
+
+    React.useEffect(() => {
+        console.log("Calling getProfile API");
+        getProfile();
+    }, []);
+
+
+
+
+    //run log details from getRuns API
+    const [runs, setRuns] = React.useState([]);
+
+    // API to return run 
+    const callApiGetRuns = async () => {
+        const url = serverURL + "/api/getRuns";
+
+        // waiting on response from api call of type POST which will be in the form of a json object
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                userID: 1, // In sprint 2 this will be set to the user ID
+            })
+        });
+
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        console.log("Runs: ", body);
+        return body;
+    }
+
+    const getRuns = () => {
+        callApiGetRuns()
+            .then(res => {
+
+                //printing to console what was returned
+                console.log("getRuns API Returned: ", res);
+                var parsedRuns = JSON.parse(res.express);
+                console.log("Runs Parsed: ", parsedRuns);
+
+                // sets stateful variable movies to the value of the list parsedMovies
+
+                setRuns(parsedRuns);
+                console.log("Runs was set");
+            });
+    }
+
+    React.useEffect(() => {
+        console.log("Calling getRuns API");
+        getRuns();
+    }, []);
+
+    
+
+
+    const verifyInputs = () => {
+        var anyErrors = false;
+        if (profileName == "") {
+            handleOpenNoName();
+            anyErrors = true;
+        }
+        if (profileBio == "") {
+            handleOpenNoBio();
+            anyErrors = true;
+        }
+        if (profileCity == "") {
+            handleOpenNoCity();
+            anyErrors = true;
+        }
+        if (profileHeight == "") {
+            handleOpenNoHeight();
+            anyErrors = true;
+        }
+        if (profileWeight == "") {
+            handleOpenNoWeight();
+            anyErrors = true;
+        }
+        
+        if (anyErrors == 0) {
+            updateProfile();
+            getProfile();
+            //history.push('/');
+        }
+        
+    }
+  
+
+    // Stateful variables for modal for each of the fields if they are left blank
+    const [openNoName, setNoName] = React.useState(false);
+
+    const handleOpenNoName = () => {
+        setNoName(true);
+    };
+
+    const handleCloseNoName = () => {
+        setNoName(false);
+    };
+
+    const [openNoBio, setNoBio] = React.useState(false);
+
+    const handleOpenNoBio = () => {
+        setNoBio(true);
+    };
+
+    const handleCloseNoBio = () => {
+        setNoBio(false);
+    };
+
+    const [openNoCity, setNoCity] = React.useState(false);
+
+    const handleOpenNoCity = () => {
+        setNoCity(true);
+    };
+
+    const handleCloseNoCity = () => {
+        setNoCity(false);
+    };
+
+    const [openNoHeight, setNoHeight] = React.useState(false);
+
+    const handleOpenNoHeight = () => {
+        setNoHeight(true);
+    };
+
+    const handleCloseNoHeight = () => {
+        setNoHeight(false);
+    };
+
+    const [openNoWeight, setNoWeight] = React.useState(false);
+
+    const handleOpenNoWeight = () => {
+        setNoWeight(true);
+    };
+
+    const handleCloseNoWeight = () => {
+        setNoWeight(false);
+    };
+
+    // Function to handle saving the new event, it must first verify there is input for each field, then call API to send to DB, then return to home
+    const onSave = () => {
+        verifyInputs();
+    }
+
+    
     return (
         <>
         <MuiThemeProvider theme={theme}>
           <SiteHeader/>
 
-
+                
                <Box sx={{ width: 1 / 2, p: 2 }}>
                 <div className="runner-profile"> {/* apply the class to the outer div */}
-                    <div className="runner-info">
-                        <h1>{name}</h1>
+                        <div className="runner-info">
+                            <h1>{currentProfile.map((item, key) => {
+                                return (
+                                    <MenuItem
+                                        //data-id={item.id}
+                                        value={item}
+                                    >
+                                        {item.name}
+                                    </MenuItem>
+                                )
+                            })
+                            }</h1>
+                            
                         <img src={runnerPhoto} alt="Runner" style={{ width: "200px" }} />
                         
                     </div>
                 </div>
 
-                <div>
-                    <p>{description}</p>
-                        <h5>    City: {city}</h5>
-                        <h5>    Height: {height}</h5>
-                        <h5>    Weight: {weight}</h5>
+                    <div>
+                        <p>{currentProfile.map((item, key) => {
+                            return (
+                                <MenuItem
+                                    //data-id={item.id}
+                                    value={item}
+                                >
+                                    {item.bio}
+                                </MenuItem>
+                            )
+                        })
+                        }</p>
+                        <h5>    City: {currentProfile.map((item, key) => {
+                            return (
+                                <MenuItem
+                                    //data-id={item.id}
+                                    value={item}
+                                >
+                                    {item.city}
+                                </MenuItem>
+                            )
+                        })
+                        }</h5>
+                        <h5>    Height: {currentProfile.map((item, key) => {
+                            return (
+                                <MenuItem
+                                    //data-id={item.id}
+                                    value={item}
+                                >
+                                    {item.height}
+                                </MenuItem>
+                            )
+                        })
+                        }</h5>
+                        <h5>    Weight: {currentProfile.map((item, key) => {
+                            return (
+                                <MenuItem
+                                    //data-id={item.id}
+                                    value={item}
+                                >
+                                    {item.weight}
+                                </MenuItem>
+                            )
+                        })
+                        }</h5>
                 </div>
 
-               </Box>
+                </Box>
+
+                
+
                 <Box sx={{ width: 1 / 2, p: 2 }}>
                     <TextField
                         fullWidth
                         id="name"
                         label="Enter Runner's Name"
                         variant="standard"
-                        value={searchName}
+                        value={profileName}
                         onChange={handleChangedName}
                         inputProps={{ maxLength: 100 }}
                         style={{ color: "#000000" }}
@@ -315,7 +550,7 @@ const Profile = () => {
                         id="bio"
                         label="Enter a Bio"
                         variant="standard"
-                        value={searchBio}
+                        value={profileBio}
                         onChange={handleChangedBio}
                         inputProps={{ maxLength: 1000 }}
                     />
@@ -327,7 +562,7 @@ const Profile = () => {
                         id="city"
                         label="Enter Runner's City"
                         variant="standard"
-                        value={searchCity}
+                        value={profileCity}
                         onChange={handleChangedCity}
                         inputProps={{ maxLength: 100 }}
                     />
@@ -339,7 +574,7 @@ const Profile = () => {
                         <Select
                             labelId="select-height-label-id"
                             id="select-height-label"
-                            value={selectedHeight}
+                            value={profileHeight}
                             label="Select a Height"
                             onChange={handleChangedHeight}
                             color="secondary"
@@ -365,7 +600,7 @@ const Profile = () => {
                         <Select
                             labelId="select-weight-label-id"
                             id="select-weight-label"
-                            value={selectedWeight}
+                            value={profileWeight}
                             label="Select an Event"
                             onChange={handleChangedWeight}
                             color="secondary"
@@ -391,6 +626,86 @@ const Profile = () => {
                     </Button>
                 </Box>
 
+                <Grid item>
+                    <Modal
+                        open={openNoName}
+                        onClose={handleCloseNoName}
+                        aria-labelledby="no-name-modal"
+                        aria-describedby="no-name-modal-desc"
+                    >
+                        <Alert
+                            severity="error"
+                            variant="filled"
+                        >
+                            Please enter an Profile Name!
+                        </Alert>
+                    </Modal>
+                </Grid> 
+
+                <Grid item>
+                    <Modal
+                        open={openNoBio}
+                        onClose={handleCloseNoBio}
+                        aria-labelledby="no-Bio-modal"
+                        aria-describedby="no-Bio-modal-desc"
+                    >
+                        <Alert
+                            severity="error"
+                            variant="filled"
+                        >
+                            Please enter an Profile Bio!
+                        </Alert>
+                    </Modal>
+                </Grid>
+
+                <Grid item>
+                    <Modal
+                        open={openNoCity}
+                        onClose={handleCloseNoCity}
+                        aria-labelledby="no-city-modal"
+                        aria-describedby="no-city-modal-desc"
+                    >
+                        <Alert
+                            severity="error"
+                            variant="filled"
+                        >
+                            Please enter an Profile City!
+                        </Alert>
+                    </Modal>
+                </Grid>
+
+                <Grid item>
+                    <Modal
+                        open={openNoHeight}
+                        onClose={handleCloseNoHeight}
+                        aria-labelledby="no-height-modal"
+                        aria-describedby="no-height-modal-desc"
+                    >
+                        <Alert
+                            severity="error"
+                            variant="filled"
+                        >
+                            Please enter an Profile Height!
+                        </Alert>
+                    </Modal>
+                </Grid> 
+
+                <Grid item>
+                    <Modal
+                        open={openNoWeight}
+                        onClose={handleCloseNoWeight}
+                        aria-labelledby="no-weight-modal"
+                        aria-describedby="no-weight-modal-desc"
+                    >
+                        <Alert
+                            severity="error"
+                            variant="filled"
+                        >
+                            Please enter an Profile Weight!
+                        </Alert>
+                    </Modal>
+                </Grid>
+
 
                 <Box sx={{ p: 2 }}>
                     <Typography variant="h5" color="inherit" noWrap>
@@ -398,51 +713,30 @@ const Profile = () => {
                         </Typography>
                 </Box>
 
-                <Box border={1} borderColor="grey.500" borderRadius={1} p={2}>
-                    <TableContainer style={{ border: '1px solid #ccc' }}>
+                <Box sx={{ width: 1, p: 2 }}>
+                    <TableContainer component={Paper}>
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell> Date </TableCell>
-                                    <TableCell>Total Distance</TableCell>
-                                    <TableCell>Pace</TableCell>
+                                    <TableCell>date</TableCell>
+                                    <TableCell>Distance</TableCell>
                                     <TableCell>Duration</TableCell>
-                                    <TableCell>City</TableCell>
+                                    <TableCell>Location</TableCell>
                                     <TableCell>Weather</TableCell>
                                     <TableCell>Description</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                <TableRow key={0}>
-                                    <TableCell>Feb. 21, 2023</TableCell>
-                                    <TableCell>5.63 km</TableCell>
-                                    <TableCell>6:51 /km</TableCell>
-                                    <TableCell>38:33</TableCell>
-                                    <TableCell>Vaughan</TableCell>
-                                    <TableCell>Freezing Rain</TableCell>
-                                    <TableCell>Solid run, logest so far. Ankle hurts a lot</TableCell>
-                                </TableRow>
-
-                                <TableRow key={1}>
-                                    <TableCell>Feb. 18, 2023</TableCell>
-                                    <TableCell>5.24 km</TableCell>
-                                    <TableCell>6:44 /km</TableCell>
-                                    <TableCell>35:16</TableCell>
-                                    <TableCell>Waterloo</TableCell>
-                                    <TableCell>Sunny</TableCell>
-                                    <TableCell>Beautiful day, amazing run</TableCell>
-                                </TableRow>
-
-                                <TableRow key={2}>
-                                    <TableCell>Feb. 11, 2023</TableCell>
-                                    <TableCell>2.44 km</TableCell>
-                                    <TableCell>5:43 /km</TableCell>
-                                    <TableCell>13:57</TableCell>
-                                    <TableCell>Toronto</TableCell>
-                                    <TableCell>Cloudy</TableCell>
-                                    <TableCell>Short one, but a quick one</TableCell>
-                                </TableRow>
-
+                                {runs.map((row) => (
+                                    <TableRow key={row.date}>
+                                        <TableCell>{row.date}</TableCell>
+                                        <TableCell>{row.distance}</TableCell>
+                                        <TableCell>{row.duration}</TableCell>
+                                        <TableCell>{row.location}</TableCell>
+                                        <TableCell>{row.weather}</TableCell>
+                                        <TableCell>{row.description}</TableCell>
+                                    </TableRow>
+                                ))}
                             </TableBody>
                         </Table>
                     </TableContainer>
