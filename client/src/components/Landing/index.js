@@ -87,26 +87,16 @@ const Landing = () => {
     getEventsLanding();
   }, []);  
 
-
-
-  const eventDemo = [
-    {name: "All Friends", id: 1},
-    {name: "Boston Marathon", id: 2},
-    {name: "New York Marathon", id: 3},
-    {name: "Miami Marathon", id: 4},
-    {name: "Toronto Marathon", id: 5}
-  ];
-
   //setEvents(eventDemo);
 
   // Stateful variables for selected event and its ID
-  const [selectedEvent, setSelectedEvent] = React.useState("");
+  const [selectedEvent, setSelectedEvent] = React.useState();
 
   const[eventID, setEventID] = React.useState("");
 
   const handleChangedEvent = (event) => {
     setSelectedEvent(event.target.value);
-    setEventID(event.currentTarget.dataset.id);
+    setEventID(event.target.value.eventID);
     console.log("Event Name: " + selectedEvent);
     console.log("Event ID: " + eventID);
   };
@@ -124,12 +114,85 @@ const Landing = () => {
     { id: 3, name: 'Matthew Erxleben', runtitle: 'Rainy run', distance: 5, duration: '40:27', pace: '8:11', date: 'Feb 20, 2023', weather: 'Raining', location: 'Oakville', description:'Ok, wasnt the best'},
   ];
 
+  const [displayEventLeaderboardData, setDisplayEventLeaderboardData] = React.useState([]);
 
-  const displayEvent = () => {
-    //callApidisplayEvent()
-    //  .then(res => {
-    //  });
-    }
+
+  const callApiDisplayEventLeaderboard = async () => {
+    const url = serverURL + "/api/displayEventLeaderboard";
+
+    // waiting on response from api call of type POST which will be in the form of a json object
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        userID: 1, // In sprint 2 this will be set to the user ID
+        eventID: eventID // event ID is stored as a stateful variable, and will hold the value of selected event from the dropdown
+      })
+    });
+
+    const body = await response.json();
+    if (response.status !== 200) throw Error(body.message);
+    console.log("Event Displayed Status: ", body);
+    return body;
+  }
+
+  const displayEventLeaderboard = () => {
+    callApiDisplayEventLeaderboard()
+      .then(res => {
+
+        //printing to console what was returned
+        console.log("displayEventLeaderboard API Returned: " + res);
+        var parsedDisplayEventLeaderboardData = JSON.parse(res.express);
+        console.log("Leaderboard Landing Parsed: ", parsedDisplayEventLeaderboardData);
+
+        // sets stateful variable displayEventLeaderboardData to the value of the list parsedDisplayEventLeaderboardData
+        setDisplayEventLeaderboardData(parsedDisplayEventLeaderboardData);
+      });
+  }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Run log
+
+
+const [displayEventRunLogData, setDisplayEventRunLogData] = React.useState([]);
+
+
+const callApiDisplayEventRunLog = async () => {
+  const url = serverURL + "/api/displayEventRunLog";
+
+  // waiting on response from api call of type POST which will be in the form of a json object
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      userID: 1, // In sprint 2 this will be set to the user ID
+      eventID: eventID // event ID is stored as a stateful variable, and will hold the value of selected event from the dropdown
+    })
+  });
+
+  const body = await response.json();
+  if (response.status !== 200) throw Error(body.message);
+  console.log("Event Displayed Status: ", body);
+  return body;
+}
+
+const displayEventRunLog = () => {
+  callApiDisplayEventRunLog()
+    .then(res => {
+
+      //printing to console what was returned
+      console.log("displayEventRunLog API Returned: " + res);
+      var parsedDisplayEventRunLogData = JSON.parse(res.express);
+      console.log("RunLog Landing Parsed: ", parsedDisplayEventRunLogData);
+
+      // sets stateful variable displayEventLeaderboardData to the value of the list parsedDisplayEventLeaderboardData
+      setDisplayEventRunLogData(parsedDisplayEventRunLogData);
+    });
+}
 
 
 
@@ -138,7 +201,8 @@ const Landing = () => {
     if(selectedEvent == ""){
       handleOpenNoEvent();
     } else {
-      displayEvent();
+      displayEventLeaderboard();
+      displayEventRunLog();
       history.push('/');
     }
   }
@@ -186,7 +250,7 @@ const Landing = () => {
               <Select
                 labelId="select-event-label-id"
                 id="select-event-label"
-                value={selectedEvent}
+                value={selectedEvent ?? ""}
                 label="Select an Event"
                 onChange={handleChangedEvent}
                 color="secondary"
@@ -194,8 +258,10 @@ const Landing = () => {
               {eventsLanding.map((item, key) => {
                 return (
                   <MenuItem
-                    data-id={item.id}
-                    value={item.name}
+                    //data-id={item.id}
+                    //value={item.name}
+                    //data-id={item.id}
+                    value={item}
                   >
                     {item.name}
                   </MenuItem>
@@ -228,18 +294,18 @@ const Landing = () => {
             <TableHead>
               <TableRow>
                 <TableCell>Name</TableCell>
-                <TableCell>Total Distance (km)</TableCell>
+                <TableCell>Total Distance (KM)</TableCell>
                 <TableCell>Total Number of runs</TableCell>
-                <TableCell>Average Pace (minutes/km)</TableCell>
+                <TableCell>Minimum Pace (HH:MM:SS / KM)</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {leaderboardData.map((row) => (
-                <TableRow key={row.id}>
+              {displayEventLeaderboardData.map((row) => (
+                <TableRow key={row.name}>
                   <TableCell>{row.name}</TableCell>
-                  <TableCell>{row.totalkm}</TableCell>
-                  <TableCell>{row.totalruns}</TableCell>
-                  <TableCell>{row.avgpace}</TableCell>
+                  <TableCell>{row.total_distance}</TableCell>
+                  <TableCell>{row.number_of_runs}</TableCell>
+                  <TableCell>{row.min_pace}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -259,19 +325,19 @@ const Landing = () => {
                 <TableCell>Name</TableCell>
                 <TableCell>Run Title</TableCell>
                 <TableCell>Date</TableCell>
-                <TableCell>Distance (km)</TableCell>
-                <TableCell>Duration (mins)</TableCell>
-                <TableCell>Pace (minutes/km)</TableCell>
+                <TableCell>Distance (KM)</TableCell>
+                <TableCell>Duration</TableCell>
+                <TableCell>Pace (HH:MM:SS / KM)</TableCell>
                 <TableCell>Location</TableCell>
                 <TableCell>Weather</TableCell>
                 <TableCell>Description</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {runLogData.map((row) => (
-                <TableRow key={row.id}>
+              {displayEventRunLogData.map((row) => (
+                <TableRow key={row.name}>
                   <TableCell>{row.name}</TableCell>
-                  <TableCell>{row.runtitle}</TableCell>
+                  <TableCell>{row.title}</TableCell>
                   <TableCell>{row.date}</TableCell>
                   <TableCell>{row.distance}</TableCell>
                   <TableCell>{row.duration}</TableCell>

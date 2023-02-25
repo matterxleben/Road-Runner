@@ -100,7 +100,7 @@ app.post('/api/addEvent', (req, res) => {
 
 
 
-// LANDING PAGE MATTS CODE
+// LANDING PAGE API's: MATT'S CODE
 
 app.post('/api/getEventsLanding', (req, res) => {
 	let userID = req.body.userID;
@@ -118,6 +118,71 @@ app.post('/api/getEventsLanding', (req, res) => {
 	AND userFriends = ?`;
 	console.log(sql);
 	let data = [userID, userID];
+
+	// connecting to sql and using the query variable, turning data into JSON object and sending back as res
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message)
+		}
+
+		let string = JSON.stringify(results);
+
+		console.log(string);
+
+		res.send({express: string});
+	});
+	connection.end();
+});
+
+// Leaderboard
+app.post('/api/displayEventLeaderboard', (req, res) => {
+	let userID = req.body.userID;
+	let eventID = req.body.eventID;
+
+	console.log(userID, eventID)
+	console.log(req.body)
+
+	//create connection to sql, declare query in string
+	let connection = mysql.createConnection(config);
+	let sql = `SELECT u.name, SUM(distance) as total_distance, COUNT(runID) as number_of_runs, MIN(TIME(ROUND((r.duration / r.distance), 2))) as min_pace
+	FROM run r
+	JOIN user u ON r.userID = u.userID
+	WHERE r.eventID = ?
+	GROUP BY u.userID`;
+	console.log(sql);
+	let data = [eventID];
+
+	// connecting to sql and using the query variable, turning data into JSON object and sending back as res
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message)
+		}
+
+		let string = JSON.stringify(results);
+
+		console.log(string);
+
+		res.send({express: string});
+	});
+	connection.end();
+});
+
+//RunLog
+app.post('/api/displayEventRunLog', (req, res) => {
+	let userID = req.body.userID;
+	let eventID = req.body.eventID;
+
+	console.log(userID, eventID)
+	console.log(req.body)
+
+	//create connection to sql, declare query in string
+	let connection = mysql.createConnection(config);
+	let sql = `SELECT u.name, r.title, r.description, CAST(r.date AS CHAR) as date, r.distance, r.duration, r.location, r.weather, TIME(ROUND((r.duration / r.distance), 2)) as pace
+	FROM run r
+	JOIN user u ON r.userID = u.userID
+	WHERE r.eventID = ?`;
+	console.log(sql);
+	let data = [eventID];
 
 	// connecting to sql and using the query variable, turning data into JSON object and sending back as res
 	connection.query(sql, data, (error, results, fields) => {
