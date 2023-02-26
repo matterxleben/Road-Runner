@@ -98,6 +98,48 @@ app.post('/api/addEvent', (req, res) => {
 	connection.end();
 });
 
+//API to send new run info to profile
+app.post('/api/addRun', (req, res) => {
+	let userID = req.body.userID;
+	let nameRun = req.body.nameRun;
+	let runDescription = req.body.runDescription;
+	let runTime = req.body.runTime;
+	let runDistance = req.body.runDistance;
+	let runDate = req.body.runDate;
+	let eventID = req.body.eventID;
+	let runLocation = req.body.runLocation;
+	let selectedWeather = req.body.selectedWeather;
+	console.log("User ID: " + userID);
+	console.log("Run Name: " + nameRun);
+	console.log("Run Discription: " + runDescription);
+	console.log("Run Time: " + runTime);
+	console.log("Run Distance: " + runDistance);
+	console.log("Run Date: " + runDate);
+	console.log("Run Location" + runLocation);
+	console.log("Run Weather: " + selectedWeather);
+
+	let connection = mysql.createConnection(config);
+
+	let sql = `INSERT INTO run (userID, title, description, distance, duration, date, eventID, location, weather) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+	let data = [userID, nameRun, runDescription, runDistance, runTime, runDate, eventID, runLocation, selectedWeather];
+
+	console.log(sql);
+	console.log(data);
+
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+
+		let string = "Run has been created!"
+
+		console.log(string);
+
+		res.send({express: string});
+	});
+	connection.end();
+});
+
 
 
 // LANDING PAGE API's: MATT'S CODE

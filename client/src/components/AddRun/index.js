@@ -15,6 +15,8 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
+import { Alert, AlertTitle } from '@mui/material';
+import Modal from '@mui/material/Modal';
 
 
 
@@ -22,33 +24,60 @@ import FormControl from '@material-ui/core/FormControl';
 const serverURL = ""; //enable for dev mode
 
 const AddRun= () => {
-  // New code below
 
-  const onSave = () => {
-    history.push('/');
+  // Stateful variable for list of events which will be returned from getEvents API
+
+  const [events, setEvents] = React.useState([]);
+
+  // API to return list of events
+  
+  const callApiGetEvents = async () => {
+    const url = serverURL + "/api/getEvents";
+
+    // waiting on response from api call of type POST which will be in the form of a json object
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        userID: 1, // In sprint 2 this will be set to the user ID
+      })
+    });
+
+    const body = await response.json();
+    if (response.status !== 200) throw Error(body.message);
+    console.log("Events: ", body);
+    return body;
   }
 
-  const onCancel = () => {
-    history.push('/');
+  const getEvents = () => {
+    callApiGetEvents()
+      .then(res => {
+
+        //printing to console what was returned
+        console.log("getEvents API Returned: " + res);
+        var parsedEvents = JSON.parse(res.express);
+        console.log("Events List Parsed: ", parsedEvents);
+
+        // sets stateful variable movies to the value of the list parsedMovies
+        setEvents(parsedEvents);
+      });
   }
 
-//Event Demo Code Below
+  React.useEffect(() => {
+    console.log("Calling getEvents API");
+    getEvents();
+  }, []);
 
-  const eventDemo = [
-    {name: "Toronto Marathon", id: 1},
-    {name: "Boston Marathon", id: 2},
-    {name: "New York Marathon", id: 3},
-    {name: "Miami Marathon", id: 4},
-    {name: "N/A", id: 5}
-  ];
-
-  const [selectedEvent, setSelectedEvent] = React.useState("");
+  // Stateful variables for selected event from dropdown and its ID
+  const [selectedEvent, setSelectedEvent] = React.useState();
 
   const[eventID, setEventID] = React.useState("");
 
   const handleChangedEvent = (event) => {
     setSelectedEvent(event.target.value);
-    setEventID(event.currentTarget.dataset.id);
+    setEventID(event.target.value.eventID);
     console.log("Event Name: " + selectedEvent);
     console.log("Event ID: " + eventID);
   };
@@ -84,8 +113,46 @@ const AddRun= () => {
   const[runDescription, setRunDescription] = React.useState("");
   const[runTime, setRunTime] = React.useState("");
   const[runDistance, setRunDistance] = React.useState("");
-  const[runDateTime, setRunDateTime] = React.useState("");
+  const[runDate, setRunDate] = React.useState("");
   const[runLocation, setRunLocation] = React.useState("");
+
+
+// Declaring API to send inputted data to event table in DB
+  
+const callApiAddRun = async () => {
+  const url = serverURL + "/api/addRun";
+
+  // waiting on response from api call of type POST which will be in the form of a json object
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      userID: 1, // In sprint 2 this will be set to the actual user
+      nameRun: nameRun,
+      runDescription: runDescription,
+      runTime: runTime,
+      runDistance: runDistance,
+      runDate: runDate,
+      eventID: eventID,
+      runLocation: runLocation,
+      selectedWeather: selectedWeather 
+    })
+  });
+
+  const body = await response.json();
+  if (response.status !== 200) throw Error(body.message);
+  console.log("Run Added Status: ", body);
+  return body;
+}
+
+const addRun = () => {
+  callApiAddRun()
+    .then(res => {
+
+    });
+  }
 
   const handleChangedName = (event) => {
     setNameRun(event.target.value);
@@ -103,55 +170,132 @@ const AddRun= () => {
     setRunDistance(event.target.value);
   }
 
-  const handleChangedDateTime = (event) => {
-    setRunDateTime(event.target.value);
+  const handleChangedDate = (event) => {
+    setRunDate(event.target.value);
   }
 
   const handleChangedLocation = (event) => {
     setRunLocation(event.target.value);
   }
 
-  const onSearch = () => {
-    getSearchedMovies();
+
+  // const verifyInputs = () => {
+  //   var anyErrors = false;
+  //   if(nameRun == ""){
+  //     handleOpenNoName();
+  //     anyErrors = true;
+  //   }
+  //   if(runDescription == ""){
+  //     handleOpenNoDescr();
+  //     anyErrors = true;
+  //   }
+  //   if(runTime == ""){
+  //     handleOpenNoTime();
+  //     anyErrors = true;
+  //   }
+  //   if(runDistance == ""){
+  //     handleOpenNoDist();
+  //     anyErrors = true;
+  //   }
+  //   if(runDate == ""){
+  //     handleOpenNoDate();
+  //     anyErrors = true;
+  //   }
+  //   if(runLocation == ""){
+  //     handleOpenNoLocation();
+  //     anyErrors = true;
+  //   }
+  //   if(selectedWeather = ""){
+  //     handleOpenNoWeather();
+  //     anyErrors = true;
+  //   }
+  //   if(anyErrors == 0) {
+  //     addRun();
+  //     history.push('/');
+  //   }
+  // }
+
+  // // Stateful variables for modal for each of the fields if they are left blank
+  // const [openNoName, setNoName] = React.useState(false);
+
+  // const handleOpenNoName = () => {
+  //   setNoName(true);
+  // };
+
+  // const handleCloseNoName = () => {
+  //   setNoName(false);
+  // };
+
+  // const [openNoDescr, setNoDescr] = React.useState(false);
+
+  // const handleOpenNoDescr = () => {
+  //   setNoDescr(true);
+  // };
+
+  // const handleCloseNoDescr = () => {
+  //   setNoDescr(false);
+  // };
+
+  // const [openNoTime, setNoTime] = React.useState(false);
+
+  // const handleOpenNoTime = () => {
+  //   setNoTime(true);
+  // };
+
+  // const handleCloseNoTime = () => {
+  //   setNoTime(false);
+  // };
+
+  // const [openNoDist, setNoDist] = React.useState(false);
+
+  // const handleOpenNoDist = () => {
+  //   setNoDist(true);
+  // };
+
+  // const handleCloseNoDist = () => {
+  //   setNoDist(false);
+  // };
+
+  // const [openNoDate, setNoDate] = React.useState(false);
+
+  // const handleOpenNoDate = () => {
+  //   setNoDate(true);
+  // };
+
+  // const handleCloseNoDate = () => {
+  //   setNoDate(false);
+  // };
+
+  //  const [openNoLocation, setNoLocation] = React.useState(false);
+
+  // const handleOpenNoLocation = () => {
+  //   setNoLocation(true);
+  // };
+
+  // const handleCloseNoLocation = () => {
+  //   setNoLocation(false);
+  // };
+
+  // const [openNoWeather, setNoWeather] = React.useState(false);
+
+  // const handleOpenNoWeather = () => {
+  //   setNoWeather(true);
+  // };
+
+  // const handleCloseNoWeather = () => {
+  //   setNoWeather(false);
+  // };
+
+   // Function to handle saving the new event, it must first verify there is input for each field, then call API to send to DB, then return to home
+   const onSave = () => {
+    //verifyInputs();
+    addRun();
+    history.push('/');
   }
 
-  const[searchedMovies, setSearchedMovies] = React.useState([]);
-
-  const callApiGetSearchedMovies = async () => {
-    const url = serverURL + "/api/getSearchedMovies";
-
-    // waiting on response from api call of type POST which will be in the form of a json object
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        nameRun: nameRun,
-        runDescription: runDescription,
-        runDateTime: runDateTime,
-        runLocation: runLocation
-      })
-    });
-
-    const body = await response.json();
-    if (response.status !== 200) throw Error(body.message);
-    console.log("Searched Movies: ", body);
-    return body;
-  }
-
-  const getSearchedMovies = () => {
-    callApiGetSearchedMovies()
-      .then(res => {
-
-        //printing to console what was returned
-        console.log("getSearchedMovies API Returned: " + res);
-        var parsedSearchedMovies = JSON.parse(res.express);
-        console.log("Searched Movie List Parsed: ", parsedSearchedMovies);
-
-        // sets stateful variable movies to the value of the list parsedMovies
-        setSearchedMovies(parsedSearchedMovies);
-      });
+  // When cancelled, need to return to home
+  const onCancel = () => {
+    history.push('/');
   }
 
   return (
@@ -190,7 +334,7 @@ const AddRun= () => {
       <TextField 
         fullWidth 
         id="run-time" 
-        label="Total Time (H:MM.SS)" 
+        label="Total Time (HH:MM:SS:MS)" 
         variant="standard" 
         value={runTime}
         onChange={handleRunTime}
@@ -211,12 +355,12 @@ const AddRun= () => {
     </Box>
     <Box sx={{ width: 1/2, p: 2}}>
     <TextField
-        id="datetime-run"
-        label="Time of Run"
-        type="datetime-local"
-        value={runDateTime}
-        onChange={handleChangedDateTime}
-        sx={{ width: 225 }}
+        id="date-run"
+        label="Day of Run"
+        type="date"
+        value={runDate}
+        onChange={handleChangedDate}
+        sx={{ width: 200 }}
         InputLabelProps={{
           shrink: true,
         }}
@@ -228,16 +372,16 @@ const AddRun= () => {
           <Select
             labelId="select-event-label-id"
             id="select-event-label"
-            value={selectedEvent}
+            value={selectedEvent ?? ""}
             label="Select an Event"
             onChange={handleChangedEvent}
             color="secondary"
           >
-          {eventDemo.map((item, key) => {
+          {events.map((item, key) => {
             return (
               <MenuItem
-                data-id={item.id}
-                value={item.name}
+                //data-id={item.id}
+                value={item}
               >
                 {item.name}
               </MenuItem>
@@ -299,40 +443,6 @@ const AddRun= () => {
         Cancel
       </Button>
     </Box>
-    {/* <List>
-        {searchedMovies.map((item, key) => {
-              return (
-                <>
-                <Divider />
-                <ListItem>
-                  <ListItemText
-                    primary={item.name}
-                    secondary= {
-                    <List>
-                      <ListItem>
-                        <ListItemText
-                          primary={"By Director: " + item.directorFullName}
-                        />
-                      </ListItem>
-                      <ListItem>
-                        <ListItemText
-                          primary={"Average Review Score: " + item.average}
-                        />
-                      </ListItem>
-                      <ListItem>
-                        <ListItemText
-                          primary={"Reviews: " + item.reviewList}
-                        />
-                      </ListItem>
-                    </List>}
-                  />
-                </ListItem>
-                <Divider />
-                </>
-              )
-            })
-            }
-      </List> */}
       </MuiThemeProvider>
     </>
   )
