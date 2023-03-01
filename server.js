@@ -33,7 +33,7 @@ app.post('/api/getEvents', (req, res) => {
 
 		console.log(string);
 
-		res.send({express: string});
+		res.send({ express: string });
 	});
 	connection.end();
 });
@@ -62,7 +62,7 @@ app.post('/api/joinEvent', (req, res) => {
 
 		console.log(string);
 
-		res.send({express: string});
+		res.send({ express: string });
 	});
 	connection.end();
 });
@@ -93,7 +93,39 @@ app.post('/api/addEvent', (req, res) => {
 
 		console.log(string);
 
-		res.send({express: string});
+		res.send({ express: string });
+	});
+	connection.end();
+});
+
+// API to send users info to mysql to update profile
+app.post('/api/updateProfile', (req, res) => {
+	let userID = req.body.userID;
+	let profileName = req.body.profileName;
+	let profileBio = req.body.profileBio;
+	let profileCity = req.body.profileCity;
+	let profileHeight = req.body.profileHeight;
+	let profileWeight = req.body.profileWeight;
+	console.log("made to this side");
+
+	let connection = mysql.createConnection(config);
+
+	let sql = `UPDATE user SET name = ?, city = ?, height = ?, weight = ?, bio = ? WHERE userID = ?`;
+	let data = [profileName, profileCity, profileHeight, profileWeight, profileBio, userID];
+
+	console.log(sql);
+	console.log(data);
+
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+    
+		let string = "Profile updated!"
+
+		console.log(string);
+
+		res.send({ express: string });
 	});
 	connection.end();
 });
@@ -122,24 +154,40 @@ app.post('/api/addRun', (req, res) => {
 
 	let sql = `INSERT INTO run (userID, title, description, distance, duration, date, eventID, location, weather) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 	let data = [userID, nameRun, runDescription, runDistance, runTime, runDate, eventID, runLocation, selectedWeather];
-
-	console.log(sql);
-	console.log(data);
-
-	connection.query(sql, data, (error, results, fields) => {
-		if (error) {
-			return console.error(error.message);
-		}
-
-		let string = "Run has been created!"
+  
+  let string = "Run has been created!"
 
 		console.log(string);
 
 		res.send({express: string});
+   });
+  connection.end();
+});
+
+// gets current profile
+app.post('/api/getProfile', (req, res) => {
+	let userID = req.body.userID;
+
+	//create connection to sql, declare query in string
+	let connection = mysql.createConnection(config);
+	let sql = `SELECT name , bio, city, height, weight FROM user WHERE userID = ?`;
+	console.log(sql);
+	let data = [userID];
+
+	// connecting to sql and using the query variable, turning data into JSON object and sending back as res
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message)
+		}
+
+		let string = JSON.stringify(results);
+
+		console.log(string);
+
+		res.send({ express: string });
 	});
 	connection.end();
 });
-
 
 
 // LANDING PAGE API's: MATT'S CODE
@@ -170,7 +218,6 @@ app.post('/api/getEventsLanding', (req, res) => {
 		let string = JSON.stringify(results);
 
 		console.log(string);
-
 		res.send({express: string});
 	});
 	connection.end();
@@ -240,6 +287,33 @@ app.post('/api/displayEventRunLog', (req, res) => {
 	});
 	connection.end();
 });
+
+// gets Profile run log
+app.post('/api/getRuns', (req, res) => {
+	let userID = req.body.userID;
+
+	//create connection to sql, declare query in string
+	let connection = mysql.createConnection(config);
+	let sql = `SELECT CAST(run.date AS CHAR) as date , run.distance, TIME_FORMAT(CAST(run.duration AS CHAR), '%T') as duration, run.location, run.weather, run.description FROM run WHERE userID = ?`;
+	console.log(sql);
+	let data = [userID];
+
+	// connecting to sql and using the query variable, turning data into JSON object and sending back as res
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message)
+		}
+
+		let string = JSON.stringify(results);
+
+		console.log(string);
+
+		res.send({ express: string });
+	});
+	connection.end();
+});
+
+
 
 /*
 app.post('/api/loadUserSettings', (req, res) => {
