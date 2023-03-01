@@ -147,15 +147,20 @@ app.post('/api/addRun', (req, res) => {
 	console.log("Run Time: " + runTime);
 	console.log("Run Distance: " + runDistance);
 	console.log("Run Date: " + runDate);
-	console.log("Run Location" + runLocation);
+	console.log("Run Location: " + runLocation);
 	console.log("Run Weather: " + selectedWeather);
 
 	let connection = mysql.createConnection(config);
 
 	let sql = `INSERT INTO run (userID, title, description, distance, duration, date, eventID, location, weather) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 	let data = [userID, nameRun, runDescription, runDistance, runTime, runDate, eventID, runLocation, selectedWeather];
-  
-  let string = "Run has been created!"
+	
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+
+  		let string = "Run has been created!"
 
 		console.log(string);
 
