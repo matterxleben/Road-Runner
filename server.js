@@ -160,7 +160,6 @@ app.post('/api/addRun', (req, res) => {
 		console.log(string);
 
 		res.send({express: string});
-   });
   connection.end();
 });
 
