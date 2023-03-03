@@ -8,13 +8,20 @@ The project that we will be creating in MSCI 342 is called Race Ready. This proj
 1. Clone repository
   - git clone https://github.com/JohnKachura/MSCI-342-Project.git
 
-2. In the MSCI-342-Project
-  - "npm install --legacy-peer-deps"
-  - yarn
+2. In the MSCI-342-Project, input in terminal:
+      npm install --legacy-peer-deps
+      yarn
 
 3. In MSCI-342-Project/client
-  - "npm install --legacy-peer-deps"
-  - yarn
+      npm install --legacy-peer-deps
+      yarn
 
 4. in MSCI-342-Project/client
-  - "npm install --save-dev --legacy-peer-deps jest@24.9.0 ts-jest babel-jest@24.9.0 @babel/preset-env @babel/preset-react react-test-renderer@16.8.6 @testing-library/react@12.1.2 react-dom@16.8.6"
+      npm install --save-dev --legacy-peer-deps jest@24.9.0 ts-jest babel-jest@24.9.0 @babel/preset-env @babel/preset-react react-test-renderer@16.8.6 @testing-library/react@12.1.2 react-dom@16.8.6
+
+
+#### For any questions or concerrns please contact
+- Matthew Erxleben (matthew.erxleben@uwaterloo.ca)
+- John Kachura (jkachura@uwaterloo.ca)
+- Thomas Kleinknecht (tkleinknecht@uwaterloo.ca)
+- Abhinav Sondhi (abhinav.sondhi@uwaterloo.ca)
