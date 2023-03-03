@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`index renders correctly 1`] = `
+<index
+  page="http://www.facebook.com"
+>
+  Facebook
+</index>
+`;
