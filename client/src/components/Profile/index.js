@@ -21,18 +21,19 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 
-import "./EmptyTableGrid.css";
-import "./RunnerProfile.css"; // import CSS file
-import runnerPhoto from "./runner-photo.jpg"; // import image file
+//import gridTable from "/Users/abhinav/Documents/MSCI-342-Project_local/client/src/components/Profile/EmptyTableGrid.css";
+//import "/Users/abhinav/Documents/MSCI-342-Project_local/client/src/components/Profile/RunnerProfile.css"; // import CSS file
+//import runnerPhoto from "/Users/abhinav/Documents/MSCI-342-Project_local/client/src/components/Profile/runner-photo.jpg"; // import image file
 
-import { Table, TableHead, TableBody, TableRow, TableCell, TableContainer} from '@material-ui/core';
+import { Table, TableHead, TableBody, TableRow, TableCell, TableContainer } from '@material-ui/core';
 import { Alert, AlertTitle } from '@mui/material';
 import Modal from '@mui/material/Modal';
 import Paper from '@material-ui/core/Paper';
 
 
 //Dev mode
-const serverURL = ""; //enable for dev mode
+
+const serverURL = "";//enable for dev mode
 
 //Deployment mode instructions
 //const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3039"; //enable for deployed mode; Change PORT to the port number given to you;
@@ -44,13 +45,11 @@ const serverURL = ""; //enable for dev mode
 const fetch = require("node-fetch");
 
 
-
-
 const Profile = () => {
 
     const [profile, setProfile] = React.useState([]);
-    
-    
+
+
 
     const heights = [
         { name: "4'11", id: 1 },
@@ -231,7 +230,7 @@ const Profile = () => {
     }
 
 
-    
+
 
     // Declaring API to send inputted data to profile table in DB
     const callApiUpdateProfile = async () => {
@@ -249,7 +248,7 @@ const Profile = () => {
                 profileCity: profileCity,
                 profileHeight: profileHeight,
                 profileWeight: profileWeight,
-                userID : 1,
+                userID: 1,
 
             })
         });
@@ -362,7 +361,7 @@ const Profile = () => {
         getRuns();
     }, []);
 
-    
+
 
 
     const verifyInputs = () => {
@@ -387,15 +386,15 @@ const Profile = () => {
             handleOpenNoWeight();
             anyErrors = true;
         }
-        
+
         if (anyErrors == 0) {
             updateProfile();
             getProfile();
             //history.push('/');
         }
-        
+
     }
-  
+
 
     // Stateful variables for modal for each of the fields if they are left blank
     const [openNoName, setNoName] = React.useState(false);
@@ -453,15 +452,15 @@ const Profile = () => {
         verifyInputs();
     }
 
-    
+
     return (
         <>
-        <MuiThemeProvider theme={theme}>
-          <SiteHeader/>
+            <MuiThemeProvider theme={theme}>
+                <SiteHeader />
 
-                
-               <Box sx={{ width: 1 / 2, p: 2 }}>
-                <div className="runner-profile"> {/* apply the class to the outer div */}
+
+                <Box sx={{ width: 1 / 2, p: 2 }}>
+                    <div > {/* apply the class to the outer div */}
                         <div className="runner-info">
                             <h1>{currentProfile.map((item, key) => {
                                 return (
@@ -474,11 +473,11 @@ const Profile = () => {
                                 )
                             })
                             }</h1>
-                            
-                        <img src={runnerPhoto} alt="Runner" style={{ width: "200px" }} />
-                        
+
+
+
+                        </div>
                     </div>
-                </div>
 
                     <div>
                         <p>{currentProfile.map((item, key) => {
@@ -525,11 +524,11 @@ const Profile = () => {
                             )
                         })
                         }</h5>
-                </div>
+                    </div>
 
                 </Box>
 
-                
+
 
                 <Box sx={{ width: 1 / 2, p: 2 }}>
                     <TextField
@@ -621,8 +620,16 @@ const Profile = () => {
                 </Box>
 
                 <Box sx={{ p: 2 }}>
-                    <Button variant="outlined" onClick={onSave}>
-                        Save
+
+                    <Button
+                        label id="button-name"
+                        value="button-name"
+                        id="button-name"
+                        aria-label="button-name"
+                        variant="outlined"
+                        onClick={onSave} data-testID='button-name'
+                    >
+                        button-name
                     </Button>
                 </Box>
 
@@ -640,7 +647,7 @@ const Profile = () => {
                             Please enter an Profile Name!
                         </Alert>
                     </Modal>
-                </Grid> 
+                </Grid>
 
                 <Grid item>
                     <Modal
@@ -688,7 +695,7 @@ const Profile = () => {
                             Please enter an Profile Height!
                         </Alert>
                     </Modal>
-                </Grid> 
+                </Grid>
 
                 <Grid item>
                     <Modal
@@ -742,9 +749,9 @@ const Profile = () => {
                     </TableContainer>
                 </Box>
 
-          </MuiThemeProvider>
+            </MuiThemeProvider>
         </>
-      )
+    )
 
 }
 
