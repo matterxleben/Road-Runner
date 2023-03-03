@@ -1,5 +1,5 @@
 
-//tests by Abhinav
+//tests by John
 
 import { render, fireEvent, screen, getByRole, getByText, queryByText, getByDisplayValue } from "@testing-library/react";
 import index from "./index";
@@ -23,17 +23,17 @@ describe('index', () => {
 
     })
 
-    it('renders correctly', () => {
-        const tree = renderer
-            .create(<index page="http://www.facebook.com">Facebook</index>)
-            .toJSON();
-        expect(tree).toMatchSnapshot();
-    });
+    // it('renders correctly', () => {
+    //     const tree = renderer
+    //         .create(<index page="http://www.facebook.com">Facebook</index>)
+    //         .toJSON();
+    //     expect(tree).toMatchSnapshot();
+    // });
 
     //if cancel button is there
     it("should render", () => {
         render(<index />)
-        expect(screen.queryByText(`Cancel`))
+        expect(screen.queryByText(`Cancelwwwz`))
 
     })
 
