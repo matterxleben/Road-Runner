@@ -621,16 +621,12 @@ const Profile = () => {
 
                 <Box sx={{ p: 2 }}>
 
-                    <Button
-                        label id="button-name"
-                        value="button-name"
-                        id="button-name"
-                        aria-label="button-name"
-                        variant="outlined"
-                        onClick={onSave} data-testID='button-name'
-                    >
-                        button-name
-                    </Button>
+                <Button
+                variant="outlined"
+                onClick={onSave}
+                >
+                Save
+                </Button>
                 </Box>
 
                 <Grid item>
