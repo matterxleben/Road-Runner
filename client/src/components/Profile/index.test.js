@@ -35,7 +35,7 @@ describe('index', () => {
     //if Run Log is there
     it("should render", () => {
         render(<index />)
-        expect(screen.queryByText(`Runner's Logkhjgkhjgjkhghj`))
+        expect(screen.queryByText(`Runner's Log`))
 
     })
 
