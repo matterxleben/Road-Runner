@@ -21,10 +21,6 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 
-//import gridTable from "/Users/abhinav/Documents/MSCI-342-Project_local/client/src/components/Profile/EmptyTableGrid.css";
-//import "/Users/abhinav/Documents/MSCI-342-Project_local/client/src/components/Profile/RunnerProfile.css"; // import CSS file
-//import runnerPhoto from "/Users/abhinav/Documents/MSCI-342-Project_local/client/src/components/Profile/runner-photo.jpg"; // import image file
-
 import { Table, TableHead, TableBody, TableRow, TableCell, TableContainer } from '@material-ui/core';
 import { Alert, AlertTitle } from '@mui/material';
 import Modal from '@mui/material/Modal';
@@ -45,11 +41,9 @@ const serverURL = "";//enable for dev mode
 const fetch = require("node-fetch");
 
 
-const Profile = () => {
+const UserDetails = () => {
 
     const [profile, setProfile] = React.useState([]);
-
-
 
     const heights = [
         { name: "4'11", id: 1 },
@@ -71,7 +65,6 @@ const Profile = () => {
         { name: "6'3", id: 17 },
         { name: "6'4", id: 18 },
         { name: "6'5 +", id: 19 }
-
     ];
 
 
@@ -234,8 +227,6 @@ const Profile = () => {
         setProfileAge(event.target.value);
     }
 
-
-
     // Declaring API to send inputted data to profile table in DB
     const callApiUpdateProfile = async () => {
         const url = serverURL + "/api/updateProfile";
@@ -249,6 +240,7 @@ const Profile = () => {
             body: JSON.stringify({
                 profileName: profileName,
                 profileBio: profileBio,
+                //ABHINAV NEEDS TO CHANGE HIS PAGE AS WELL
                 profileAge: profileAge,
                 profileCity: profileCity,
                 profileHeight: profileHeight,
@@ -272,53 +264,10 @@ const Profile = () => {
             });
     }
 
-
-    //profile details from getProfile API
-    const [currentProfile, setCurrentProfile] = React.useState([]);
-
-    // API to return current profile 
-    const callApiGetProfile = async () => {
-        const url = serverURL + "/api/getProfile";
-
-        // waiting on response from api call of type POST which will be in the form of a json object
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                userID: 1, // In sprint 2 this will be set to the user ID
-            })
-        });
-
-        const body = await response.json();
-        if (response.status !== 200) throw Error(body.message);
-        console.log("Profile: ", body);
-        return body;
-    }
-
-    const getProfile = () => {
-        callApiGetProfile()
-            .then(res => {
-
-                //printing to console what was returned
-                console.log("getProfile API Returned: ", res);
-                var parsedProfile = JSON.parse(res.express);
-                console.log("Profile Parsed: ", parsedProfile);
-
-                // sets stateful variable movies to the value of the list parsedMovies
-
-                setCurrentProfile(parsedProfile);
-                console.log("Profile was set");
-            });
-    }
-
     React.useEffect(() => {
         console.log("Calling getProfile API");
-        getProfile();
+        //getProfile();
     }, []);
-
-
 
 
     //run log details from getRuns API
@@ -366,9 +315,6 @@ const Profile = () => {
         getRuns();
     }, []);
 
-
-
-
     const verifyInputs = () => {
         var anyErrors = false;
         if (profileName == "") {
@@ -398,12 +344,11 @@ const Profile = () => {
 
         if (anyErrors == 0) {
             updateProfile();
-            getProfile();
+            //getProfile();
             //history.push('/');
         }
 
     }
-
 
     // Stateful variables for modal for each of the fields if they are left blank
     const [openNoName, setNoName] = React.useState(false);
@@ -476,78 +421,6 @@ const Profile = () => {
         <>
             <MuiThemeProvider theme={theme}>
                 <SiteHeader />
-
-
-                <Box sx={{ width: 1 / 2, p: 2 }}>
-                    <div > {/* apply the class to the outer div */}
-                        <div className="runner-info">
-                            <h1>{currentProfile.map((item, key) => {
-                                return (
-                                    <MenuItem
-                                        //data-id={item.id}
-                                        value={item}
-                                    >
-                                        {item.name}
-                                    </MenuItem>
-                                )
-                            })
-                            }</h1>
-
-
-
-                        </div>
-                    </div>
-
-                    <div>
-                        <p>{currentProfile.map((item, key) => {
-                            return (
-                                <MenuItem
-                                    //data-id={item.id}
-                                    value={item}
-                                >
-                                    {item.bio}
-                                </MenuItem>
-                            )
-                        })
-                        }</p>
-                        <h5>    City: {currentProfile.map((item, key) => {
-                            return (
-                                <MenuItem
-                                    //data-id={item.id}
-                                    value={item}
-                                >
-                                    {item.city}
-                                </MenuItem>
-                            )
-                        })
-                        }</h5>
-                        <h5>    Height: {currentProfile.map((item, key) => {
-                            return (
-                                <MenuItem
-                                    //data-id={item.id}
-                                    value={item}
-                                >
-                                    {item.height}
-                                </MenuItem>
-                            )
-                        })
-                        }</h5>
-                        <h5>    Weight: {currentProfile.map((item, key) => {
-                            return (
-                                <MenuItem
-                                    //data-id={item.id}
-                                    value={item}
-                                >
-                                    {item.weight}
-                                </MenuItem>
-                            )
-                        })
-                        }</h5>
-                    </div>
-
-                </Box>
-
-
 
                 <Box sx={{ width: 1 / 2, p: 2 }}>
                     <TextField
@@ -660,7 +533,7 @@ const Profile = () => {
                         variant="outlined"
                         onClick={onSave} data-testID='button-name'
                     >
-                        Save
+                        save
                     </Button>
                 </Box>
 
@@ -759,47 +632,10 @@ const Profile = () => {
                         </Alert>
                     </Modal>
                 </Grid>
-
-
-                <Box sx={{ p: 2 }}>
-                    <Typography variant="h5" color="inherit" noWrap>
-                        Runner's Log
-                        </Typography>
-                </Box>
-
-                <Box sx={{ width: 1, p: 2 }}>
-                    <TableContainer component={Paper}>
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>date</TableCell>
-                                    <TableCell>Distance</TableCell>
-                                    <TableCell>Duration</TableCell>
-                                    <TableCell>Location</TableCell>
-                                    <TableCell>Weather</TableCell>
-                                    <TableCell>Description</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {runs.map((row) => (
-                                    <TableRow key={row.date}>
-                                        <TableCell>{row.date}</TableCell>
-                                        <TableCell>{row.distance}</TableCell>
-                                        <TableCell>{row.duration}</TableCell>
-                                        <TableCell>{row.location}</TableCell>
-                                        <TableCell>{row.weather}</TableCell>
-                                        <TableCell>{row.description}</TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </Box>
-
             </MuiThemeProvider>
         </>
     )
 
 }
 
-export default Profile;
+export default UserDetails;

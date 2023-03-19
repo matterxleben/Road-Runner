@@ -103,6 +103,7 @@ app.post('/api/updateProfile', (req, res) => {
 	let userID = req.body.userID;
 	let profileName = req.body.profileName;
 	let profileBio = req.body.profileBio;
+	let profileAge = req.body.profileAge;
 	let profileCity = req.body.profileCity;
 	let profileHeight = req.body.profileHeight;
 	let profileWeight = req.body.profileWeight;
@@ -110,8 +111,8 @@ app.post('/api/updateProfile', (req, res) => {
 
 	let connection = mysql.createConnection(config);
 
-	let sql = `UPDATE user SET name = ?, city = ?, height = ?, weight = ?, bio = ? WHERE userID = ?`;
-	let data = [profileName, profileCity, profileHeight, profileWeight, profileBio, userID];
+	let sql = `UPDATE user SET name = ?, city = ?, height = ?, weight = ?, bio = ?, age = ? WHERE userID = ?`;
+	let data = [profileName, profileCity, profileHeight, profileWeight, profileBio, profileAge, userID];
 
 	console.log(sql);
 	console.log(data);
