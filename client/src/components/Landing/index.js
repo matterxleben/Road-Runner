@@ -29,6 +29,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { Alert, AlertTitle } from '@mui/material';
 import Modal from '@mui/material/Modal';
+import { TableSortLabel } from '@mui/material';
 
 //Dev mode
 const serverURL = ""; //enable for dev mode
@@ -100,19 +101,6 @@ const Landing = () => {
     console.log("Event Name: " + selectedEvent);
     console.log("Event ID: " + eventID);
   };
-
-  const leaderboardData = [
-    { id: 1, name: 'Matthew Erxleben', totalkm: 25, avgpace: '6:54', totalruns: 8 },
-    { id: 2, name: 'Aidan Lehal', totalkm: 15, avgpace: '5:00', totalruns: 6 },
-    { id: 3, name: 'Justin Villar', totalkm: 50, avgpace: '5:59', totalruns: 15 },
-    { id: 4, name: 'John Kachura', totalkm: 2, avgpace: '10:32', totalruns: 3 },
-  ];
-
-  const runLogData = [
-    { id: 1, name: 'Matthew Erxleben', runtitle: 'Grind on a sunday', distance: 5, duration: '30:12', pace: '6:01', date: 'Feb 21, 2023', weather: 'Sunny', location: 'Toronto', description:'Solid run, was grinding tho during the last km'},
-    { id: 2, name: 'Aidan Lehal', runtitle: 'Bad Saturday run', distance: 8, duration: '45:12', pace: '7:12', date: 'Feb 20, 2023', weather: 'Cloudy', location: 'Missisauga', description:'Bad run, felt horrible'},
-    { id: 3, name: 'Matthew Erxleben', runtitle: 'Rainy run', distance: 5, duration: '40:27', pace: '8:11', date: 'Feb 20, 2023', weather: 'Raining', location: 'Oakville', description:'Ok, wasnt the best'},
-  ];
 
   const [displayEventLeaderboardData, setDisplayEventLeaderboardData] = React.useState([]);
 
@@ -223,16 +211,41 @@ const displayEventRunLog = () => {
     verifyInputs();
   }
 
+  // Sorting stuff:
+  // Stateful variable for sorting order
+  const [leaderboardSortOrder, setLeaderboardSortOrder] = React.useState("asc");
+
+  // Stateful variable for column being sorted
+  const [leaderboardSortColumn, setLeaderboardSortColumn] = React.useState("");
+
+  // Helper function for sorting data by column
+  const sortLeaderboardData = (a, b) => {
+    if (leaderboardSortOrder === "asc") {
+      return a[leaderboardSortColumn] < b[leaderboardSortColumn] ? -1 : 1;
+    } else {
+      return a[leaderboardSortColumn] > b[leaderboardSortColumn] ? -1 : 1;
+    }
+  };
+
+  // Handler for sorting table by column
+  const handleLeaderboardSort = (column) => {
+    if (column === leaderboardSortColumn) {
+      setLeaderboardSortOrder(leaderboardSortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setLeaderboardSortColumn(column);
+      setLeaderboardSortOrder("asc");
+    }
+  };
+
+
   return (
     <MuiThemeProvider theme={theme}>
     <SiteHeader/>
     <Grid
       container
       spacing={0}
-      direction="column"
-      
+      direction="column" 
     >
-      
       <Box sx={{ p: 2 }}>
         <Typography variant="h5" color="inherit" noWrap align="left">
           Welcome to RoadRunner! Your home for all things running!
@@ -293,14 +306,46 @@ const displayEventRunLog = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell>Total Distance (KM)</TableCell>
-                <TableCell>Total Number of runs</TableCell>
-                <TableCell>Minimum Pace (HH:MM:SS / KM)</TableCell>
+                <TableCell>
+                  <TableSortLabel
+                    active={leaderboardSortColumn === "name"}
+                    direction={leaderboardSortOrder}
+                    onClick={() => handleLeaderboardSort("name")}
+                  >
+                    Name
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell>
+                  <TableSortLabel
+                    active={leaderboardSortColumn === "total_distance"}
+                    direction={leaderboardSortOrder}
+                    onClick={() => handleLeaderboardSort("total_distance")}
+                  >
+                    Total Distance (KM) 
+                  </TableSortLabel>              
+                </TableCell>
+                <TableCell>
+                  <TableSortLabel
+                    active={leaderboardSortColumn === "number_of_runs"}
+                    direction={leaderboardSortOrder}
+                    onClick={() => handleLeaderboardSort("number_of_runs")}
+                  >
+                    Total Number of runs
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell>
+                  <TableSortLabel
+                    active={leaderboardSortColumn === "min_pace"}
+                    direction={leaderboardSortOrder}
+                    onClick={() => handleLeaderboardSort("min_pace")}
+                  >
+                    Minimum Pace (HH:MM:SS / KM)
+                  </TableSortLabel>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {displayEventLeaderboardData.map((row) => (
+              {displayEventLeaderboardData.sort(sortLeaderboardData).map((row) => (
                 <TableRow key={row.name}>
                   <TableCell>{row.name}</TableCell>
                   <TableCell>{row.total_distance}</TableCell>
@@ -369,5 +414,6 @@ const displayEventRunLog = () => {
   )
 
 }
+
 
 export default Landing;
