@@ -2,6 +2,7 @@ import React from "react";
 import { Router, Switch, Route } from "react-router-dom";
 import Home from '../Home';
 import SignIn from '../SignIn';
+import SignUp from '../SignUp';
 import Landing from '../Landing';
 import history from './history';
 import JoinEvent from '../JoinEvent';
@@ -20,6 +21,7 @@ export default function PrivateRoute({
       <Switch>
       <Route path="/Home" exact component={Home} />
       <Route path="/SignIn" exact component={SignIn} />
+      <Route path="/SignUp" exact component={SignUp} />
       <Route path="/" exact component={Landing} />
       <Route path="/AddEvent" exact component={AddEvent} />
       <Route path="/JoinEvent" exact component={JoinEvent} />
