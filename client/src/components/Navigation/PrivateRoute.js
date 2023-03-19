@@ -9,6 +9,7 @@ import AddEvent from "../AddEvent";
 import AddFriend from "../AddFriend";
 import AddRun from "../AddRun";
 import Profile from "../Profile";
+import UserDetails from "../UserDetails";
 
 export default function PrivateRoute({
 
@@ -25,6 +26,7 @@ export default function PrivateRoute({
       <Route path="/AddFriend" exact component={AddFriend} />
       <Route path="/AddRun" exact component={AddRun} />
       <Route path="/Profile" exact component={Profile} />
+      <Route path="/UserDetails" exact component={UserDetails} />
       </Switch>
     </Router>
   );
