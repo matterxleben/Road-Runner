@@ -53,7 +53,14 @@ const SiteHeader = () => {
             sx={{ my: 2, color: "black", display: "block" }}
             onClick={() => history.push('/AddRun')}
             >
-            Add Run
+                Add Run
+            </Button>
+                          <Button
+                              key={"FriendProfile"}
+                              sx={{ my: 2, color: "black", display: "block" }}
+                              onClick={() => history.push('/FriendProfile')}
+                          >
+                              Friend Profile
             </Button>
             <Button
             key={"Profile"}
