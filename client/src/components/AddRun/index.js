@@ -132,8 +132,11 @@ const AddRun = () => {
   };
 
   const addRun = () => {
-    callApiAddRun().then(res => {});
-  };
+    callApiAddRun()
+      .then(res => {
+  
+      });
+    }
 
   const handleChangedName = event => {
     setNameRun(event.target.value);
@@ -159,60 +162,21 @@ const AddRun = () => {
     setRunLocation(event.target.value);
   };
 
-  // const notify = () => toast.error("Please enter the name of your run");
-  // const notify2 = () => toast.error("Please enter your run time");
-  // const notify3 = () => toast.error("Please enter the distance ran");
-  // const notify4 = () => toast.error("Please enter the date you ran");
-  // const notify5 = () => toast.error("Please enter the location of the run");
-  // const notify6 = () => toast.error("Please select the weather during your run");
-  // const notifySucc = () =>
-  //   toast.success(
-  //     <div>
-  //       <font size="+1">Your Run has been recorded 🔥 </font>
-  //     </div>
-  //   );
-
-  // const verifyInputs = () => {
-  //   var anyErrors = false;
-  //   if (nameRun == '') {
-  //     notify();
-  //     console.log("errorroro)")
-  //     console.error("Error")
-  //     anyErrors = true;
-  //   }
-  //   if (runDescription == '') {
-  //     anyErrors = true;
-  //   }
-  //   if (runTime == '') {
-  //     notify2();
-  //     anyErrors = true;
-  //   }
-  //   if (runDistance == '') {
-  //     notify3();
-  //     anyErrors = true;
-  //   }
-  //   if (runDate == '') {
-  //     notify4();
-  //     anyErrors = true;
-  //   }
-  //   if (runLocation == '') {
-  //     notify5();
-  //     anyErrors = true;
-  //   }
-  //   if ((selectedWeather = '')) {
-  //     notify6();
-  //     anyErrors = true;
-  //   }
-  //   if (anyErrors == 0) {
-  //     notifySucc();
-  //     addRun();
-  //     history.push('/');
-  //   }
-  // };
-
   // Function to handle saving the new event, it must first verify there is input for each field, then call API to send to DB, then return to home
   const onSave = () => {
-    //verifyInputs();
+    // if (
+    //   nameRun.trim() === '' ||
+    //   runDescription.trim() === '' ||
+    //   runTime.trim() === '' ||
+    //   runDistance.trim() === '' ||
+    //   runDate.trim() === '' ||
+    //   eventID.trim() === '' ||
+    //   runLocation.trim() === '' ||
+    //   selectedWeather.trim() === ''
+    // ) {
+    //   alert('Please fill in all fields');
+    //   return;
+    // } else
     addRun();
     history.push('/');
   };
