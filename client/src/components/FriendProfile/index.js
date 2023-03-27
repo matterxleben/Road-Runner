@@ -9,7 +9,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
-import {MuiThemeProvider} from '@material-ui/core/styles';
+import { MuiThemeProvider } from '@material-ui/core/styles';
 import history from '../Navigation/history';
 import Grid from '@mui/material/Grid';
 import FormControl from '@material-ui/core/FormControl';
@@ -22,16 +22,18 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 
 import {
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableContainer,
+    Table,
+    TableHead,
+    TableBody,
+    TableRow,
+    TableCell,
+    TableContainer,
 } from '@material-ui/core';
-import {Alert, AlertTitle} from '@mui/material';
+import { Alert, AlertTitle } from '@mui/material';
 import Modal from '@mui/material/Modal';
 import Paper from '@material-ui/core/Paper';
+import { useParams } from "react-router-dom";
+import { useLocation } from 'react-router-dom';
 
 //Dev mode
 
@@ -47,247 +49,254 @@ const serverURL = ''; //enable for dev mode
 const fetch = require('node-fetch');
 
 const FriendProfile = () => {
-    
-  //profile details from getProfile API
-  const [currentProfile, setCurrentProfile] = React.useState([]);
 
-  // API to return current profile
-  const callApiGetProfile = async () => {
-    const url = serverURL + '/api/getProfile';
+    const location = useLocation();
+    const selectedFriend = location.state.selectedFriend;
 
-    // waiting on response from api call of type POST which will be in the form of a json object
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userID: 1, // In sprint 2 this will be set to the user ID
-      }),
-    });
+    console.log("i think i did it: ", selectedFriend);
 
-    const body = await response.json();
-    if (response.status !== 200) throw Error(body.message);
-    console.log('Profile: ', body);
-    return body;
-  };
+    //profile details from getProfile API
+    const [currentProfile, setCurrentProfile] = React.useState([]);
 
-  const getProfile = () => {
-    callApiGetProfile().then(res => {
-      //printing to console what was returned
-      console.log('getProfile API Returned: ', res);
-      var parsedProfile = JSON.parse(res.express);
-      console.log('Profile Parsed: ', parsedProfile);
+    // API to return current profile
+    const callApiGetProfile = async () => {
+        const url = serverURL + '/api/getProfile';
 
-      // sets stateful variable movies to the value of the list parsedMovies
+        // waiting on response from api call of type POST which will be in the form of a json object
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userID: selectedFriend, // In sprint 2 this will be set to the user ID
+            }),
+        });
 
-      setCurrentProfile(parsedProfile);
-      console.log('Profile was set');
-    });
-  };
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        console.log('Profile: ', body);
+        return body;
+    };
 
-  React.useEffect(() => {
-    console.log('Calling getProfile API');
-    getProfile();
-  }, []);
+    const getProfile = () => {
+        callApiGetProfile().then(res => {
+            //printing to console what was returned
+            console.log('getProfile API Returned: ', res);
+            var parsedProfile = JSON.parse(res.express);
+            console.log('Profile Parsed: ', parsedProfile);
 
-  //run log details from getRuns API
-  const [runs, setRuns] = React.useState([]);
+            // sets stateful variable movies to the value of the list parsedMovies
 
-  // API to return run
-  const callApiGetRuns = async () => {
-    const url = serverURL + '/api/getRuns';
+            setCurrentProfile(parsedProfile);
+            console.log('Profile was set');
+        });
+    };
 
-    // waiting on response from api call of type POST which will be in the form of a json object
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userID: 1, // In sprint 2 this will be set to the user ID
-      }),
-    });
+    React.useEffect(() => {
+        console.log('Calling getProfile API');
+        getProfile();
+    }, []);
 
-    const body = await response.json();
-    if (response.status !== 200) throw Error(body.message);
-    console.log('Runs: ', body);
-    return body;
-  };
+    //run log details from getRuns API
+    const [runs, setRuns] = React.useState([]);
 
-  const getRuns = () => {
-    callApiGetRuns().then(res => {
-      //printing to console what was returned
-      console.log('getRuns API Returned: ', res);
-      var parsedRuns = JSON.parse(res.express);
-      console.log('Runs Parsed: ', parsedRuns);
+    // API to return run
+    const callApiGetRuns = async () => {
+        const url = serverURL + '/api/getRuns';
 
-      // sets stateful variable movies to the value of the list parsedMovies
+        // waiting on response from api call of type POST which will be in the form of a json object
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userID: selectedFriend, // In sprint 2 this will be set to the user ID
+            }),
+        });
 
-      setRuns(parsedRuns);
-      console.log('Runs was set');
-    });
-  };
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        console.log('Runs: ', body);
+        return body;
+    };
 
-  React.useEffect(() => {
-    console.log('Calling getRuns API');
-    getRuns();
-  }, []);
+    const getRuns = () => {
+        callApiGetRuns().then(res => {
+            //printing to console what was returned
+            console.log('getRuns API Returned: ', res);
+            var parsedRuns = JSON.parse(res.express);
+            console.log('Runs Parsed: ', parsedRuns);
 
-  const onClickDisplay = () => {
-    //addFriend();
-  };
+            // sets stateful variable movies to the value of the list parsedMovies
 
-  //NEED TO IMPLEMENT ADD FRIEND LOGIC WITH APIS
-  //   const addFriend = () => {
-  //     callApiGetProfile()
-  //         .then(res => {
+            setRuns(parsedRuns);
+            console.log('Runs was set');
+        });
+    };
 
-  //             //printing to console what was returned
-  //             console.log("getProfile API Returned: ", res);
-  //             var parsedProfile = JSON.parse(res.express);
-  //             console.log("Profile Parsed: ", parsedProfile);
+    React.useEffect(() => {
+        console.log('Calling getRuns API');
+        getRuns();
+    }, []);
 
-  //             // sets stateful variable movies to the value of the list parsedMovies
+    const onClickDisplay = () => {
+        //addFriend();
+    };
 
-  //             setCurrentProfile(parsedProfile);
-  //             console.log("Profile was set");
-  //         });
-  // }
+    //NEED TO IMPLEMENT ADD FRIEND LOGIC WITH APIS
+    //   const addFriend = () => {
+    //     callApiGetProfile()
+    //         .then(res => {
 
-  // React.useEffect(() => {
-  //     console.log("Calling getProfile API");
-  //     getProfile();
-  // }, []);
+    //             //printing to console what was returned
+    //             console.log("getProfile API Returned: ", res);
+    //             var parsedProfile = JSON.parse(res.express);
+    //             console.log("Profile Parsed: ", parsedProfile);
 
-  return (
-    <>
-      <MuiThemeProvider theme={theme}>
-        <SiteHeader />
+    //             // sets stateful variable movies to the value of the list parsedMovies
 
-        <Box sx={{width: 1 / 2, p: 2}}>
-          <Grid item xs={3}>
-            <Box sx={{p: 2}}>
-              <Button variant="outlined" onClick={onClickDisplay}>
-                <b>ADD FRIEND</b>
-              </Button>
-            </Box>
-          </Grid>
+    //             setCurrentProfile(parsedProfile);
+    //             console.log("Profile was set");
+    //         });
+    // }
 
-          <div>
-            {' '}
-            {/* apply the class to the outer div */}
-            <div className="runner-info">
-              <h1>
-                {currentProfile.map((item, key) => {
-                  return (
-                    <MenuItem
-                      //data-id={item.id}
-                      value={item}
-                    >
-                      {item.name}
-                    </MenuItem>
-                  );
-                })}
-              </h1>
-            </div>
-          </div>
+    // React.useEffect(() => {
+    //     console.log("Calling getProfile API");
+    //     getProfile();
+    // }, []);
 
-          <div>
-            <p>
-              {currentProfile.map((item, key) => {
-                return (
-                  <MenuItem
-                    //data-id={item.id}
-                    value={item}
-                  >
-                    {item.bio}
-                  </MenuItem>
-                );
-              })}
-            </p>
-            <h5>
-              {' '}
+    return (
+        <>
+            <MuiThemeProvider theme={theme}>
+                <SiteHeader />
+
+                <Box sx={{ width: 1 / 2, p: 2 }}>
+                    <Grid item xs={3}>
+                        <Box sx={{ p: 2 }}>
+                            <Button variant="outlined" onClick={onClickDisplay}>
+                                <b>ADD FRIEND</b>
+                            </Button>
+                        </Box>
+                    </Grid>
+
+                    <div>
+                        {' '}
+                        {/* apply the class to the outer div */}
+                        <div className="runner-info">
+                            <h1>
+                                {currentProfile.map((item, key) => {
+                                    return (
+                                        <MenuItem
+                                            //data-id={item.id}
+                                            value={item}
+                                        >
+                                            {item.name}
+                                        </MenuItem>
+                                    );
+                                })}
+                            </h1>
+                        </div>
+                    </div>
+
+                    <div>
+                        <p>
+                            {currentProfile.map((item, key) => {
+                                return (
+                                    <MenuItem
+                                        //data-id={item.id}
+                                        value={item}
+                                    >
+                                        {item.bio}
+                                    </MenuItem>
+                                );
+                            })}
+                        </p>
+                        <h5>
+                            {' '}
               City:{' '}
-              {currentProfile.map((item, key) => {
-                return (
-                  <MenuItem
-                    //data-id={item.id}
-                    value={item}
-                  >
-                    {item.city}
-                  </MenuItem>
-                );
-              })}
-            </h5>
-            <h5>
-              {' '}
+                            {currentProfile.map((item, key) => {
+                                return (
+                                    <MenuItem
+                                        //data-id={item.id}
+                                        value={item}
+                                    >
+                                        {item.city}
+                                    </MenuItem>
+                                );
+                            })}
+                        </h5>
+                        <h5>
+                            {' '}
               Height:{' '}
-              {currentProfile.map((item, key) => {
-                return (
-                  <MenuItem
-                    //data-id={item.id}
-                    value={item}
-                  >
-                    {item.height}
-                  </MenuItem>
-                );
-              })}
-            </h5>
-            <h5>
-              {' '}
+                            {currentProfile.map((item, key) => {
+                                return (
+                                    <MenuItem
+                                        //data-id={item.id}
+                                        value={item}
+                                    >
+                                        {item.height}
+                                    </MenuItem>
+                                );
+                            })}
+                        </h5>
+                        <h5>
+                            {' '}
               Weight:{' '}
-              {currentProfile.map((item, key) => {
-                return (
-                  <MenuItem
-                    //data-id={item.id}
-                    value={item}
-                  >
-                    {item.weight}
-                  </MenuItem>
-                );
-              })}
-            </h5>
-          </div>
-        </Box>
+                            {currentProfile.map((item, key) => {
+                                return (
+                                    <MenuItem
+                                        //data-id={item.id}
+                                        value={item}
+                                    >
+                                        {item.weight}
+                                    </MenuItem>
+                                );
+                            })}
+                        </h5>
+                        <h5>id:{selectedFriend} 
+                        </h5>
+                    </div>
+                </Box>
 
-        <Box sx={{p: 2}}>
-          <Typography variant="h5" color="inherit" noWrap>
-            Runner's Log
+                <Box sx={{ p: 2 }}>
+                    <Typography variant="h5" color="inherit" noWrap>
+                        Runner's Log
           </Typography>
-        </Box>
+                </Box>
 
-        <Box sx={{width: 1, p: 2}}>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>date</TableCell>
-                  <TableCell>Distance</TableCell>
-                  <TableCell>Duration</TableCell>
-                  <TableCell>Location</TableCell>
-                  <TableCell>Weather</TableCell>
-                  <TableCell>Description</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {runs.map(row => (
-                  <TableRow key={row.date}>
-                    <TableCell>{row.date}</TableCell>
-                    <TableCell>{row.distance}</TableCell>
-                    <TableCell>{row.duration}</TableCell>
-                    <TableCell>{row.location}</TableCell>
-                    <TableCell>{row.weather}</TableCell>
-                    <TableCell>{row.description}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Box>
-      </MuiThemeProvider>
-    </>
-  );
+                <Box sx={{ width: 1, p: 2 }}>
+                    <TableContainer component={Paper}>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>date</TableCell>
+                                    <TableCell>Distance</TableCell>
+                                    <TableCell>Duration</TableCell>
+                                    <TableCell>Location</TableCell>
+                                    <TableCell>Weather</TableCell>
+                                    <TableCell>Description</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {runs.map(row => (
+                                    <TableRow key={row.date}>
+                                        <TableCell>{row.date}</TableCell>
+                                        <TableCell>{row.distance}</TableCell>
+                                        <TableCell>{row.duration}</TableCell>
+                                        <TableCell>{row.location}</TableCell>
+                                        <TableCell>{row.weather}</TableCell>
+                                        <TableCell>{row.description}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Box>
+            </MuiThemeProvider>
+        </>
+    );
 };
 
 export default FriendProfile;

@@ -4,7 +4,6 @@ import Box from "@mui/material/Box";
 import { MuiThemeProvider } from "@material-ui/core/styles";
 import SiteHeader from '../SiteHeader';
 import theme from '../Theme';
-import Link from "@mui/material/Link";
 import Button from '@material-ui/core/Button';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -30,6 +29,12 @@ import Paper from '@material-ui/core/Paper';
 import { Alert, AlertTitle } from '@mui/material';
 import Modal from '@mui/material/Modal';
 import { TableSortLabel } from '@mui/material';
+import ReactDOM from 'react-dom';
+import { BrowserRouter as Router, Route, Switch, useHistory, useParams } from 'react-router-dom';
+import { Link } from "react-router-dom";
+import  useState from 'react';
+
+
 
 //Dev mode
 const serverURL = ""; //enable for dev mode
@@ -43,7 +48,84 @@ const serverURL = ""; //enable for dev mode
 
 const fetch = require("node-fetch");
 
-const Landing = () => {
+const Landing = (props) => {
+
+
+    // Stateful variables for selected friend and their ID
+    const [selectedFriend, setSelectedFriend] = React.useState();
+
+    const [friendID, setFriendID] = React.useState("");
+
+  
+    const history = useHistory();
+
+    const handleUserClick = (event) => {
+        console.log("button pressed user ID: ", selectedFriend);
+        //history.push(`/users/${userId}`);
+        history.push('/FriendProfile/', {selectedFriend});
+
+    };
+
+    const handleChangedFriend = (event) => {
+        setSelectedFriend(event.target.value);
+        console.log("Did it change: ", event.target.value);
+        setFriendID(event.target.value.userID);
+        console.log("Friend Name: " + selectedFriend);
+        console.log("Friend ID: " + friendID);
+
+        //history.push(`/FriendProfile/${friendID}`);
+
+    };
+    
+
+    // Stateful variable for list of friend which will be returned from getFriendsLanding API
+    const [friendsLanding, setFriendsLanding] = React.useState([]);
+
+    // API to return list of friends
+    const callApiGetFriendsLanding = async () => {
+        const url = serverURL + "/api/getFriendsLanding";
+
+        // waiting on response from api call of type POST which will be in the form of a json object
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                userID: 1, // In sprint 2 this will be set to the user ID
+            })
+        });
+
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        console.log("Events: ", body);
+        return body;
+    }
+
+    const getFriendsLanding = () => {
+        callApiGetFriendsLanding()
+            .then(res => {
+
+                //printing to console what was returned
+                console.log("getFriendsLanding API Returned: " + res);
+                var parsedFriendsLanding = JSON.parse(res.express);
+                console.log("Friends List Landing Parsed: ", parsedFriendsLanding);
+
+                // sets stateful variable friends to the value of the list parsedFriends
+                setFriendsLanding(parsedFriendsLanding);
+            });
+    }
+
+    React.useEffect(() => {
+        console.log("Calling getFriendsLanding API");
+        getFriendsLanding();
+    }, []);
+
+
+    
+
+
+
 
   // Stateful variable for list of events which will be returned from getEventsLanding API
   const [eventsLanding, setEventsLanding] = React.useState([]);
@@ -238,9 +320,10 @@ const displayEventRunLog = () => {
   };
 
 
-  return (
+    return (
     <MuiThemeProvider theme={theme}>
-    <SiteHeader/>
+            <SiteHeader />
+
     <Grid
       container
       spacing={0}
@@ -285,6 +368,35 @@ const displayEventRunLog = () => {
             </FormControl>
           </Box>
         </Grid>
+                  <Grid item xs={3}>
+                      <Box sx={{ p: 2 }}>
+                          <FormControl fullWidth>
+                              <InputLabel id="select-movie-label">Select a Friend</InputLabel>
+                              <Select
+                                  labelId="select-friend-label-id"
+                                  id="select-friend-label"
+                                  value={selectedFriend}
+                                  label="Select a Friend"
+                                  onChange={handleChangedFriend}
+                                  color="secondary"
+                              >
+                                  {friendsLanding.map((item, key) => {
+                                      return (
+                                          <MenuItem
+                                              //data-id={item.id}
+                                              //value={item.name}
+                                              //data-id={item.id}
+                                              value={item.userID}
+                                          >
+                                              {item.name}
+                                          </MenuItem>
+                                      )
+                                  })
+                                  }
+                              </Select>
+                          </FormControl>
+                      </Box>
+                  </Grid>
         <Grid item xs = {3}>
           <Box sx={{p: 2}}>
             <Button
@@ -295,7 +407,13 @@ const displayEventRunLog = () => {
             </Button>
           </Box>
         </Grid>
+                    <Grid item xs={3}>
+                        <Box sx={{ p: 2 }}>
+                            <Button variant="outlined" onClick={handleUserClick}> Friend's Profile</Button>
+                        </Box>
+                    </Grid>
       </Grid>
+
       <Box sx={{ p: 2 }}>
         <Typography variant="h5" color="inherit" noWrap align="left">
           Leaderboard:

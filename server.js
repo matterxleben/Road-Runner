@@ -320,8 +320,54 @@ app.post('/api/getRuns', (req, res) => {
 });
 
 
+//Gets list of friends for landing page drop down
+app.post('/api/getFriendsLanding', (req, res) => {
+	let userID = req.body.userID;
 
+	//create connection to sql, declare query in string
+	let connection = mysql.createConnection(config);
+	let sql = `SELECT e.userID, u.name FROM user u JOIN eventUser e ON  u.userID = e.userID WHERE eventID IN (SELECT eventID FROM event WHERE userFriends = ?);`;
+	console.log(sql);
+	let data = [userID];
 
+	// connecting to sql and using the query variable, turning data into JSON object and sending back as res
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message)
+		}
+
+		let string = JSON.stringify(results);
+
+		console.log(string);
+		res.send({ express: string });
+	});
+	connection.end();
+});
+
+// gets Friend profile
+app.post('/api/getFriendsProfile', (req, res) => {
+	let userID = req.body.userID;
+
+	//create connection to sql, declare query in string
+	let connection = mysql.createConnection(config);
+	let sql = `SELECT name , bio, city, height, weight FROM user WHERE userID = ?`;
+	console.log(sql);
+	let data = [userID];
+
+	// connecting to sql and using the query variable, turning data into JSON object and sending back as res
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message)
+		}
+
+		let string = JSON.stringify(results);
+
+		console.log(string);
+
+		res.send({ express: string });
+	});
+	connection.end();
+});
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
 //app.listen(port, '172.31.31.77'); //for the deployed version, specify the IP address of the server
