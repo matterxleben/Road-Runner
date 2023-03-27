@@ -11,7 +11,7 @@ import AddFriend from "../AddFriend";
 import AddRun from "../AddRun";
 import Profile from "../Profile";
 import UserDetails from "../UserDetails";
-import FriendProfiel from "../FriendProfile";
+import FriendProfile from "../FriendProfile";
 
 export default function PrivateRoute({
 
