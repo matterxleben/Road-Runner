@@ -49,8 +49,6 @@ const Profile = () => {
 
     const [profile, setProfile] = React.useState([]);
 
-
-
     const heights = [
         { name: "4'11", id: 1 },
         { name: "5'0", id: 2 },
