@@ -20,6 +20,7 @@ import FormLabel from '@material-ui/core/FormLabel';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
+import { TableSortLabel } from '@mui/material';
 
 //import gridTable from "/Users/abhinav/Documents/MSCI-342-Project_local/client/src/components/Profile/EmptyTableGrid.css";
 //import "/Users/abhinav/Documents/MSCI-342-Project_local/client/src/components/Profile/RunnerProfile.css"; // import CSS file
@@ -471,6 +472,32 @@ const Profile = () => {
         verifyInputs();
     }
 
+    // Sorting stuff:
+    // Stateful variable for sorting order
+    const [leaderboardSortOrder, setLeaderboardSortOrder] = React.useState("asc");
+
+    // Stateful variable for column being sorted
+    const [leaderboardSortColumn, setLeaderboardSortColumn] = React.useState("");
+
+    // Helper function for sorting data by column
+    const sortLeaderboardData = (a, b) => {
+        if (leaderboardSortOrder === "asc") {
+        return a[leaderboardSortColumn] < b[leaderboardSortColumn] ? -1 : 1;
+        } else {
+        return a[leaderboardSortColumn] > b[leaderboardSortColumn] ? -1 : 1;
+        }
+    };
+
+    // Handler for sorting table by column
+    const handleLeaderboardSort = (column) => {
+        if (column === leaderboardSortColumn) {
+        setLeaderboardSortOrder(leaderboardSortOrder === "asc" ? "desc" : "asc");
+        } else {
+        setLeaderboardSortColumn(column);
+        setLeaderboardSortOrder("asc");
+        }
+    };    
+
 
     return (
         <>
@@ -772,16 +799,40 @@ const Profile = () => {
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>date</TableCell>
-                                    <TableCell>Distance</TableCell>
-                                    <TableCell>Duration</TableCell>
+                                    <TableCell>
+                                        <TableSortLabel
+                                            active={leaderboardSortColumn === "date"}
+                                            direction={leaderboardSortOrder}
+                                            onClick={() => handleLeaderboardSort("date")}
+                                        >
+                                            Date
+                                        </TableSortLabel>                                    
+                                    </TableCell>
+                                    <TableCell>
+                                        <TableSortLabel
+                                            active={leaderboardSortColumn === "distance"}
+                                            direction={leaderboardSortOrder}
+                                            onClick={() => handleLeaderboardSort("distance")}
+                                        >
+                                            Distance
+                                        </TableSortLabel>
+                                    </TableCell>
+                                    <TableCell>
+                                        <TableSortLabel
+                                            active={leaderboardSortColumn === "duration"}
+                                            direction={leaderboardSortOrder}
+                                            onClick={() => handleLeaderboardSort("duration")}
+                                        >
+                                            Duration
+                                        </TableSortLabel>
+                                    </TableCell>
                                     <TableCell>Location</TableCell>
                                     <TableCell>Weather</TableCell>
                                     <TableCell>Description</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {runs.map((row) => (
+                                {runs.sort(sortLeaderboardData).map((row) => (
                                     <TableRow key={row.date}>
                                         <TableCell>{row.date}</TableCell>
                                         <TableCell>{row.distance}</TableCell>
