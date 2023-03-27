@@ -11,4 +11,5 @@ export const JOIN_EVENT = '/JoinEvent';
 export const ADD_FRIEND = '/AddFriend';
 export const ADD_RUN = '/AddRun';
 export const PROFILE = '/Profile';
-export const FRIENDPROFILE = '/FriendProfile';
+export const USER_DETAILS = '/UserDetails';
+export const FriendProfile = '/FriendProfile';
