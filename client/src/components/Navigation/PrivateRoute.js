@@ -11,25 +11,27 @@ import AddFriend from "../AddFriend";
 import AddRun from "../AddRun";
 import Profile from "../Profile";
 import UserDetails from "../UserDetails";
+import FriendProfile from "../FriendProfile";
 
 export default function PrivateRoute({
 
 }) {
-  return (
+    return (
 
-    <Router history={history}>
-      <Switch>
-      <Route path="/Home" exact component={Home} />
-      <Route path="/SignIn" exact component={SignIn} />
-      <Route path="/SignUp" exact component={SignUp} />
-      <Route path="/" exact component={Landing} />
-      <Route path="/AddEvent" exact component={AddEvent} />
-      <Route path="/JoinEvent" exact component={JoinEvent} />
-      <Route path="/AddFriend" exact component={AddFriend} />
-      <Route path="/AddRun" exact component={AddRun} />
-      <Route path="/Profile" exact component={Profile} />
-      <Route path="/UserDetails" exact component={UserDetails} />
-      </Switch>
-    </Router>
-  );
+        <Router history={history}>
+            <Switch>
+                <Route path="/Home" exact component={Home} />
+                <Route path="/SignIn" exact component={SignIn} />
+                <Route path="/SignUp" exact component={SignUp} />
+                <Route path="/" exact component={Landing} />
+                <Route path="/AddEvent" exact component={AddEvent} />
+                <Route path="/JoinEvent" exact component={JoinEvent} />
+                <Route path="/AddFriend" exact component={AddFriend} />
+                <Route path="/AddRun" exact component={AddRun} />
+                <Route path="/Profile" exact component={Profile} />
+                <Route path="/UserDetails" exact component={UserDetails} />
+                <Route path="/FriendProfile" exact component={FriendProfile} />
+            </Switch>
+        </Router>
+    );
 }
