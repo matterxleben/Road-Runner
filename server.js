@@ -98,6 +98,89 @@ app.post('/api/addEvent', (req, res) => {
 	connection.end();
 });
 
+// API to add new user with their email
+app.post('/api/addUser', (req, res) => {
+	let userEmail = req.body.userEmail;
+	console.log("User Email: " + userEmail);
+
+	let connection = mysql.createConnection(config);
+
+	let addUserSQL = `INSERT INTO user (email) VALUES (?)`;
+	let addUserData = [userEmail];
+
+	console.log(addUserSQL);
+	console.log(addUserData);
+
+	connection.query(addUserSQL, addUserData, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+
+		let string = "User has been created!"
+
+		console.log(string);
+
+		res.send({ express: string });
+	});
+	connection.end();
+});
+
+// API to return added users ID
+app.post('/api/getUserID', (req, res) => {
+	let userEmail = req.body.userEmail;
+	console.log("User Email: " + userEmail);
+
+	let connection = mysql.createConnection(config);
+
+	let sql = `SELECT userID FROM user WHERE email = ?`;
+	let data = [userEmail];
+
+	console.log(sql);
+	console.log(data);
+
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+
+		let string = JSON.stringify(results);
+
+		console.log(string);
+
+		res.send({ express: string });
+	});
+	connection.end();
+});
+
+// API to create userEvent for newly added user
+app.post('/api/addUserEvent', (req, res) => {
+	let userID = req.body.userID;
+	console.log("User ID: " + userID);
+
+	let connection = mysql.createConnection(config);
+
+	let sql = `INSERT INTO event (friendEvent, userFriends) VALUES (?, ?)`;
+	let data = [1, userID];
+
+	console.log(sql);
+	console.log(data);
+
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message);
+		}
+
+		let string = "New user's friend event added!"
+
+		console.log(string);
+
+		res.send({ express: string });
+	});
+	connection.end();
+});
+
+
+
 // API to send users info to mysql to update profile
 app.post('/api/updateProfile', (req, res) => {
 	let userID = req.body.userID;
