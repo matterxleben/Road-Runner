@@ -34,11 +34,14 @@ const SignUp = () => {
     const [userEmail, setUserEmail] = React.useState("");
     const [userPassword, setUserPassword] = React.useState("");
     const [userPasswordConfirmation, setUserPasswordConfirmation] = React.useState("");
-    const [userID, setUserID] = React.useState(0);
+    //const [userID, setUserID] = React.useState(0);
 
-    const handleChangedUserID = (event) => {
-        setUserID(event.target.value);
-    }
+    //Does it need to be stateful?
+    var userID = 0;
+
+    // const handleChangedUserID = (event) => {
+    //     setUserID(event.target.value);
+    // }
 
     const handleChangedEmail = (event) => {
         setUserEmail(event.target.value);
@@ -92,7 +95,7 @@ const SignUp = () => {
     const addUser = () => {
         callApiAddUser()
           .then(res => {
-            //getUserID();
+            getUserID();
           });
     }
 
@@ -127,9 +130,11 @@ const SignUp = () => {
             var parsedID = JSON.parse(res.express);
             console.log("User ID Parsed: ", parsedID);
             var num = parsedID[0].userID;
-            console.log(num);
-            setUserID(30);
-            console.log("User ID Set To:" + userID);
+            console.log("User ID before value is added to the variable: " + userID);
+            console.log("The userID value it was assigned: " + num);
+            // setUserID(num);
+            userID = num;
+            console.log("User ID (variable) is now Set To:" + userID);
           });
     }
 
