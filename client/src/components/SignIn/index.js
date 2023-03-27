@@ -34,6 +34,8 @@ const SignIn = () => {
   // verify email and password are correct, if so re route to home page, if not pop-up modal
   const onSignIn = () => {
     verifyCredentials();
+    history.push('/');
+
 }
 
 // clears fields
