@@ -12,3 +12,5 @@ export const ADD_FRIEND = '/AddFriend';
 export const ADD_RUN = '/AddRun';
 export const PROFILE = '/Profile';
 export const USER_DETAILS = '/UserDetails';
+export const FriendProfile = '/FriendProfile';
+

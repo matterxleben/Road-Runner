@@ -10,14 +10,14 @@ import { within } from '@testing-library/dom'
 describe('index', () => {
 
     //if save button is there
-    it("should render", () => {
+    it("should show save button", () => {
         render(<index />)
         expect(screen.queryByText(`Save`))
 
     })
 
     //if Profile headers are there
-    it("should render", () => {
+    it("should show profile headers", () => {
         render(<index />)
         expect(screen.queryByText(`City`))
         expect(screen.queryByText(`Height`))
@@ -33,14 +33,15 @@ describe('index', () => {
     });
 
     //if Run Log is there
-    it("should render", () => {
+    it("should show run log", () => {
         render(<index />)
         expect(screen.queryByText(`Runner's Log`))
 
     })
 
     //if Profile input fields are there
-    it("should render", () => {
+
+    it("should show profile input fields", () => {
         render(<index />)
         expect(screen.queryByText(`Enter Runner's Name`))
         expect(screen.queryByText(`Enter a Bio`))
