@@ -103,6 +103,7 @@ app.post('/api/updateProfile', (req, res) => {
 	let userID = req.body.userID;
 	let profileName = req.body.profileName;
 	let profileBio = req.body.profileBio;
+	let profileAge = req.body.profileAge;
 	let profileCity = req.body.profileCity;
 	let profileHeight = req.body.profileHeight;
 	let profileWeight = req.body.profileWeight;
@@ -110,8 +111,8 @@ app.post('/api/updateProfile', (req, res) => {
 
 	let connection = mysql.createConnection(config);
 
-	let sql = `UPDATE user SET name = ?, city = ?, height = ?, weight = ?, bio = ? WHERE userID = ?`;
-	let data = [profileName, profileCity, profileHeight, profileWeight, profileBio, userID];
+	let sql = `UPDATE user SET name = ?, city = ?, height = ?, weight = ?, bio = ?, age = ? WHERE userID = ?`;
+	let data = [profileName, profileCity, profileHeight, profileWeight, profileBio, profileAge, userID];
 
 	console.log(sql);
 	console.log(data);
@@ -320,146 +321,6 @@ app.post('/api/getRuns', (req, res) => {
 
 
 
-/*
-app.post('/api/loadUserSettings', (req, res) => {
-
-	let connection = mysql.createConnection(config);
-	let userID = req.body.userID;
-
-	let sql = `SELECT mode FROM user WHERE userID = ?`;
-	console.log(sql);
-	let data = [userID];
-	console.log(data);
-
-	connection.query(sql, data, (error, results, fields) => {
-		if (error) {
-			return console.error(error.message);
-		}
-
-		let string = JSON.stringify(results);
-		//let obj = JSON.parse(string);
-		res.send({ express: string });
-	});
-	connection.end();
-});
-
-app.post('/api/getTopMovies', (req, res) => {
-	let genre = req.body.chosenGenre;
-
-	//create connection to sql, declare query in string
-	let connection = mysql.createConnection(config);
-	let sql = `SELECT m.name, m.year, AVG(r.reviewScore) as avg 
-	FROM movies m, Review r 
-	WHERE r.movieID = m.id AND
-	m.id IN (SELECT movie_id FROM movies_genres WHERE genre = ?)
-	GROUP BY m.name, m.year 
-	ORDER BY AVG(r.reviewScore) DESC 
-	LIMIT 5`;
-	console.log(sql);
-	let data = [genre];
-
-	// connecting to sql and using the query variable, turning data into JSON object and sending back as res
-	connection.query(sql, data, (error, results, fields) => {
-		if (error) {
-			return console.error(error.message)
-		}
-
-		let string = JSON.stringify(results);
-
-		console.log(string);
-
-		res.send({express: string});
-	});
-	connection.end();
-});
-
-app.post('/api/getGenres', (req, res) => {
-
-	//create connection to sql, declare query in string
-	let connection = mysql.createConnection(config);
-	let sql = `SELECT DISTINCT genre FROM movies_genres`;
-	console.log(sql);
-	let data = [];
-
-	// connecting to sql and using the query variable, turning data into JSON object and sending back as res
-	connection.query(sql, data, (error, results, fields) => {
-		if (error) {
-			return console.error(error.message)
-		}
-
-		let string = JSON.stringify(results);
-
-		console.log(string);
-
-		res.send({express: string});
-	});
-	connection.end();
-});
-
-app.post('/api/getSearchedMovies', (req, res) => {
-	let searchTitle = req.body.searchTitle ;
-	let searchActor = req.body.searchActor;
-	let searchDirector =  req.body.searchDirector;
-	console.log("Search Terms: Title: " + searchTitle + ", Actor Name: " + searchActor + ", Director Name: " + searchDirector);
-
-	//create connection to sql, declare query in string
-	let connection = mysql.createConnection(config);
-	let data = [];
-	let sql = `SELECT m.id, m.name, scores.average, GROUP_CONCAT(r.reviewContent SEPARATOR ', ') as reviewList, CONCAT(d.first_name, " ", d.last_name) as directorFullName 
-	FROM movies m
-	LEFT JOIN Review r ON r.movieID = m.id 
-	INNER JOIN movies_directors md ON m.id = md.movie_id 
-	INNER JOIN directors d ON d.id = md.director_id
-	LEFT JOIN (SELECT movieID, AVG(reviewScore) as average FROM Review GROUP BY Review.movieID) AS scores ON m.id = scores.movieID`;
-
-	if (searchTitle || searchActor || searchDirector) {
-		sql += " WHERE ";
-	}
-
-	if(searchTitle) {
-		sql += "m.name = ?";
-		data.push(searchTitle);
-	}
-
-	if(searchTitle && searchActor) {
-		sql += "AND ";
-	}
-
-	if(searchActor) {
-		sql += "m.id IN (SELECT m.id FROM movies m RIGHT JOIN roles ro ON ro.movie_id = m.id INNER JOIN actors a ON a.id = ro.actor_id WHERE CONCAT(a.first_name, ' ', a.last_name) = ?)";
-		data.push(searchActor);
-	}
-
-	if((searchTitle || searchActor) && searchDirector) {
-		sql += "AND ";
-	}
-
-	if(searchDirector) {
-		sql += "CONCAT(d.first_name, ' ', d.last_name) = ?";
-		data.push(searchDirector);
-	}
-
-	sql += " GROUP BY m.id, m.name, scores.average, directorFullName ORDER BY m.name";
-
-	console.log(sql);
-	console.log(data);
-
-	// connecting to sql and using the query variable, turning data into JSON object and sending back as res
-	connection.query(sql, data, (error, results, fields) => {
-		if (error) {
-			return console.error(error.message)
-		}
-
-		let string = JSON.stringify(results);
-
-		console.log("Results: " + string);
-
-		res.send({express: string});
-	});
-	connection.end();
-});
-
-*/
 
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
