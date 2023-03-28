@@ -3,13 +3,14 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCoOXYZOWMfrG2lfWDgOIvw4l0mE9855_A",
-    authDomain: "buddyfinder-e5b18.firebaseapp.com",
-    projectId: "buddyfinder-e5b18",
-    storageBucket: "buddyfinder-e5b18.appspot.com",
-    messagingSenderId: "357117456271",
-    appId: "1:357117456271:web:0f1ffc5a25ab0530ffe5fa",
-    measurementId: "G-C8GDMKFJTF"
+    apiKey: "AIzaSyCDmk0Ibl-kWZ7hgEnNkadfWqbXUS5acjo",
+    authDomain: "roadrunner-775e0.firebaseapp.com",
+    databaseURL: "https://roadrunner-775e0-default-rtdb.firebaseio.com",
+    projectId: "roadrunner-775e0",
+    storageBucket: "roadrunner-775e0.appspot.com",
+    messagingSenderId: "831308665444",
+    appId: "1:831308665444:web:8b4ed89876643db9bb0571",
+    measurementId: "G-XM3EDE26E6"
 };
 
 // Initialize Firebase
