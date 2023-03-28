@@ -321,7 +321,7 @@ app.post('/api/displayEventLeaderboard', (req, res) => {
 
 	//create connection to sql, declare query in string
 	let connection = mysql.createConnection(config);
-	let sql = `SELECT u.userID, u.name, SUM(distance) as total_distance, COUNT(runID) as number_of_runs, MIN(TIME(ROUND((r.duration / r.distance), 2))) as min_pace
+	let sql = `SELECT u.userID, u.name, ROUND(SUM(distance), 2) as total_distance, COUNT(runID) as number_of_runs, MIN(TIME(ROUND((r.duration / r.distance), 2))) as min_pace
 	FROM run r
 	JOIN user u ON r.userID = u.userID
 	WHERE r.eventID = ?

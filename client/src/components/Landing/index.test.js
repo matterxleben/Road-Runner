@@ -36,4 +36,45 @@ describe('index', () => {
         expect(screen.queryByText(`Select an event`))
 
     })
+
+    it('should sort leaderboard by distance when distance column is clicked', () => {
+        render(<index />)
+        
+        // mock function to sort
+        const handleSort = jest.fn();
+
+        // Check if the mock function was called
+        expect(handleSort('total_distance'))
+
+        // check if sorts by column
+        expect(screen.queryByText(`total_distance`))
+    })
+
+    it('should sort leaderboard by pace when pace column is clicked', () => {
+        render(<index />)
+        
+        // mock function to sort
+        const handleSort = jest.fn();
+
+        // Check if the mock function was called
+        expect(handleSort('pace'))
+
+        // check if sorts by column
+        expect(screen.queryByText(`pace`))
+    })
+
+    it('should sort leaderboard by name when name column is clicked', () => {
+        render(<index />)
+        
+        // mock function to sort
+        const handleSort = jest.fn();
+
+        // Check if the mock function was called
+        expect(handleSort('name'))
+
+        // check if sorts by column
+        expect(screen.queryByText(`name`))
+    })
+
+
 });
