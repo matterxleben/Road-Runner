@@ -95,17 +95,17 @@ const AddRun = () => {
     const timer = setTimeout(() => {
       console.log("Calling getEvents API with userID: " + tempID);
       // insert API here
-      getEventsLanding();
+      getUserEvents();
     }, 2000);
     return () => clearTimeout(timer);
   }, []);
 
-  // Stateful variable for list of events which will be returned from getEventsLanding API
+  // Stateful variable for list of events which will be returned from getUserEvents API
   const [events, setEvents] = React.useState([]);
 
   // API to return list of events
-  const callApiGetEventsLanding = async () => {
-    const url = serverURL + '/api/getEventsLanding';
+  const callApiGetUserEvents = async () => {
+    const url = serverURL + '/api/getUserEvents';
 
     // waiting on response from api call of type POST which will be in the form of a json object
     const response = await fetch(url, {
@@ -124,21 +124,21 @@ const AddRun = () => {
     return body;
   };
 
-  const getEventsLanding = () => {
-    callApiGetEventsLanding().then(res => {
+  const getUserEvents = () => {
+    callApiGetUserEvents().then(res => {
       //printing to console what was returned
-      console.log('getEventsLanding API Returned: ' + res);
-      var parsedEventsLanding = JSON.parse(res.express);
-      console.log('Events List Landing Parsed: ', parsedEventsLanding);
+      console.log('getUserEvents API Returned: ' + res);
+      var parsedEvents = JSON.parse(res.express);
+      console.log('Events List Landing Parsed: ', parsedEvents);
 
       // sets stateful variable movies to the value of the list parsedMovies
-      setEvents(parsedEventsLanding);
+      setEvents(parsedEvents);
     });
   };
 
   React.useEffect(() => {
-    console.log('Calling getEventsLanding API');
-    getEventsLanding();
+    console.log('Calling getUserEvents API');
+    getUserEvents();
   }, []);
 
   // Stateful variables for selected event from dropdown and its ID

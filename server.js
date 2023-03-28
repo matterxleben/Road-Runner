@@ -277,6 +277,33 @@ app.post('/api/getProfile', (req, res) => {
 	connection.end();
 });
 
+app.post('/api/getUserEvents', (req, res) => {
+	let userID = req.body.userID;
+
+	//create connection to sql, declare query in string
+	let connection = mysql.createConnection(config);
+	let sql = `SELECT eventID, name
+	FROM event
+	WHERE friendevent = 0
+	AND eventID IN (SELECT eventID FROM eventUser WHERE userID = ?)`;
+	console.log(sql);
+	let data = [userID];
+
+	// connecting to sql and using the query variable, turning data into JSON object and sending back as res
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message)
+		}
+
+		let string = JSON.stringify(results);
+
+		console.log(string);
+		res.send({express: string});
+	});
+	connection.end();
+});
+
+
 
 // LANDING PAGE API's: MATT'S CODE
 
