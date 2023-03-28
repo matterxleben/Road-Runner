@@ -20,6 +20,8 @@ import FormLabel from '@material-ui/core/FormLabel';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
+import { auth } from "../Firebase/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 import {
     Table,
@@ -50,6 +52,86 @@ const fetch = require('node-fetch');
 
 const OtherProfile = () => {
 
+    // user info
+
+  var userEmail = "";
+  const [userID, setUserID] = React.useState(0);
+
+  // add API to get user ID
+  const callApiUserID = async () => {
+    const url = serverURL + "/api/getUserID";
+    console.log("Email being passed into User ID API: " + userEmail);
+    // waiting on response from api call of type POST which will be in the form of a json object
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        userEmail: userEmail
+      })
+
+    });
+
+    const body = await response.json();
+    if (response.status !== 200) throw Error(body.message);
+    console.log("User ID: ", body);
+    return body;
+  };
+
+  const getUserID = () => {
+      callApiUserID()
+        .then(res => {
+          
+          //printing to console what was returned
+          console.log("getUserID API Returned: " + res);
+          var parsedID = JSON.parse(res.express);
+          console.log("User ID Parsed: ", parsedID);
+          var num = parsedID[0].userID;
+          setUserID(num);
+          console.log("User ID (variable) is now Set To:" + userID);
+        });
+  }
+
+  // controlling the order in which APIs are called with useEffect hooks
+
+  React.useEffect(() => {
+    console.log("Firebase API called to check sign in");
+    var email = "";
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        console.log("Firebase returned email: " + user.email);
+        userEmail = user.email;
+        console.log("useEmail variable: " + userEmail);
+        console.log("USER IS LOGGED IN");
+        // ...
+      } else {
+        // User is signed out
+        console.log("USER IS NOT LOGGED IN");
+        history.push('/signIn');
+      }
+    });
+  }, []);  
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log("Calling getUserID API with email: " + userEmail);
+      getUserID();
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+    React.useEffect(() => {
+        console.log('Calling getProfile API for other user');
+        getProfile();
+    }, []);
+
+    React.useEffect(() => {
+        console.log('Calling getRuns API for other user');
+        getRuns();
+    }, []);
+
     const location = useLocation();
     const selectedFriend = location.state.selectedFriend || location.state.item;
 
@@ -68,7 +150,7 @@ const OtherProfile = () => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                userID: selectedFriend, // In sprint 2 this will be set to the user ID
+                userID: selectedFriend, 
             }),
         });
 
@@ -92,10 +174,7 @@ const OtherProfile = () => {
         });
     };
 
-    React.useEffect(() => {
-        console.log('Calling getProfile API');
-        getProfile();
-    }, []);
+    
 
     //run log details from getRuns API
     const [runs, setRuns] = React.useState([]);
@@ -135,18 +214,13 @@ const OtherProfile = () => {
         });
     };
 
-    React.useEffect(() => {
-        console.log('Calling getRuns API');
-        getRuns();
-    }, []);
-
     const onClickDisplay = () => {
         addFriend();
     };
 
     //api to add friend
     const callApiAddFriend = async () => {
-        console.log("i think i did it: other1 ", selectedFriend);
+        console.log("Calling add friend with: ", selectedFriend);
         const url = serverURL + "/api/addFriend";
 
         // waiting on response from api call of type POST which will be in the form of a json object
@@ -156,7 +230,7 @@ const OtherProfile = () => {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                currentUserID: 1, // In sprint 2 this will be set to the actual user
+                currentUserID: userID, // In sprint 2 this will be set to the actual user
                 friendID: selectedFriend
             })
         });
@@ -170,10 +244,10 @@ const OtherProfile = () => {
     }
 
     const addFriend = () => {
-        console.log("add friend button pressed");
+        console.log("add friend button pressed, userID: " + userID + " is adding userID: " + selectedFriend);
         callApiAddFriend()
             .then(res => {
-                console.log("add friend api called");
+                console.log("add friend api completed");
             });
     }
 

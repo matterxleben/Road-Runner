@@ -33,6 +33,8 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter as Router, Route, Switch, useHistory, useParams } from 'react-router-dom';
 import { Link } from "react-router-dom";
 import  useState from 'react';
+import { auth } from "../Firebase/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 
 
@@ -50,6 +52,73 @@ const fetch = require("node-fetch");
 
 const Landing = (props) => {
 
+  var userEmail = "";
+  var userID = 0;
+
+  // add API to get user ID
+  const callApiUserID = async () => {
+    const url = serverURL + "/api/getUserID";
+    console.log("Email being passed into User ID API: " + userEmail);
+    // waiting on response from api call of type POST which will be in the form of a json object
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        userEmail: userEmail
+      })
+
+    });
+
+    const body = await response.json();
+    if (response.status !== 200) throw Error(body.message);
+    console.log("User ID: ", body);
+    return body;
+  };
+
+  const getUserID = () => {
+      callApiUserID()
+        .then(res => {
+          
+          //printing to console what was returned
+          console.log("getUserID API Returned: " + res);
+          var parsedID = JSON.parse(res.express);
+          console.log("User ID Parsed: ", parsedID);
+          var num = parsedID[0].userID;
+          userID = num;
+          console.log("User ID (variable) is now Set To:" + userID);
+        });
+  }
+
+  // controlling the order in which APIs are called with useEffect hooks
+
+  React.useEffect(() => {
+    console.log("Firebase API called to check sign in");
+    var email = "";
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        console.log("Firebase returned email: " + user.email);
+        userEmail = user.email;
+        console.log("useEmail variable: " + userEmail);
+        console.log("USER IS LOGGED IN");
+        // ...
+      } else {
+        // User is signed out
+        console.log("USER IS NOT LOGGED IN");
+        history.push('/signIn');
+      }
+    });
+  }, []);  
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log("Calling getUserID API with email: " + userEmail);
+      getUserID();
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
     
 
     const handleClickName = (item) => {
@@ -106,7 +175,7 @@ const Landing = (props) => {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                userID: 1, // In sprint 2 this will be set to the user ID
+                userID: userID, // In sprint 2 this will be set to the user ID
             })
         });
 
@@ -130,16 +199,6 @@ const Landing = (props) => {
             });
     }
 
-    React.useEffect(() => {
-        console.log("Calling getFriendsLanding API");
-        getFriendsLanding();
-    }, []);
-
-
-    
-
-
-
 
   // Stateful variable for list of events which will be returned from getEventsLanding API
   const [eventsLanding, setEventsLanding] = React.useState([]);
@@ -155,7 +214,7 @@ const Landing = (props) => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        userID: 1, // In sprint 2 this will be set to the user ID
+        userID: userID, // In sprint 2 this will be set to the user ID
       })
     });
 
@@ -178,11 +237,6 @@ const Landing = (props) => {
         setEventsLanding(parsedEventsLanding);
       });
   }
-
-  React.useEffect(() => {
-    console.log("Calling getEventsLanding API");
-    getEventsLanding();
-  }, []);  
 
   //setEvents(eventDemo);
 
@@ -211,7 +265,7 @@ const Landing = (props) => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        userID: 1, // In sprint 2 this will be set to the user ID
+        userID: userID, // In sprint 2 this will be set to the user ID
         eventID: eventID // event ID is stored as a stateful variable, and will hold the value of selected event from the dropdown
       })
     });
@@ -253,7 +307,7 @@ const callApiDisplayEventRunLog = async () => {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      userID: 1, // In sprint 2 this will be set to the user ID
+      userID: userID, // In sprint 2 this will be set to the user ID
       eventID: eventID // event ID is stored as a stateful variable, and will hold the value of selected event from the dropdown
     })
   });
@@ -332,6 +386,24 @@ const displayEventRunLog = () => {
       setLeaderboardSortOrder("asc");
     }
   };
+
+  
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log("Calling getFriendsLanding API with userID: " + userID);
+      getFriendsLanding();
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log("Calling getEventsLanding API with userID: " + userID);
+      getEventsLanding();
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
 
     return (

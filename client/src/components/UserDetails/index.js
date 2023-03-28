@@ -25,6 +25,8 @@ import { Table, TableHead, TableBody, TableRow, TableCell, TableContainer } from
 import { Alert, AlertTitle } from '@mui/material';
 import Modal from '@mui/material/Modal';
 import Paper from '@material-ui/core/Paper';
+import { auth } from "../Firebase/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 
 //Dev mode
@@ -42,6 +44,78 @@ const fetch = require("node-fetch");
 
 
 const UserDetails = () => {
+
+    // user info
+
+    var userEmail = "";
+    var tempID = 0;
+    const [userID, setUserID] = React.useState(0);
+
+    // add API to get user ID
+    const callApiUserID = async () => {
+        const url = serverURL + "/api/getUserID";
+        console.log("Email being passed into User ID API: " + userEmail);
+        // waiting on response from api call of type POST which will be in the form of a json object
+        const response = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            userEmail: userEmail
+        })
+
+        });
+
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        console.log("User ID: ", body);
+        return body;
+    };
+
+    const getUserID = () => {
+        callApiUserID()
+            .then(res => {
+            
+            //printing to console what was returned
+            console.log("getUserID API Returned: " + res);
+            var parsedID = JSON.parse(res.express);
+            console.log("User ID Parsed: ", parsedID);
+            var num = parsedID[0].userID;
+            setUserID(num);
+            tempID = num;
+            console.log("User ID (variable) is now Set To: " + tempID);
+            });
+    }
+
+    // controlling the order in which APIs are called with useEffect hooks
+
+    React.useEffect(() => {
+        console.log("Firebase API called to check sign in");
+        var email = "";
+        onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // User is signed in, see docs for a list of available properties
+            console.log("Firebase returned email: " + user.email);
+            userEmail = user.email;
+            console.log("useEmail variable: " + userEmail);
+            console.log("USER IS LOGGED IN");
+            // ...
+        } else {
+            // User is signed out
+            console.log("USER IS NOT LOGGED IN");
+            history.push('/signIn');
+        }
+        });
+    }, []);
+
+    React.useEffect(() => {
+        const timer = setTimeout(() => {
+        console.log("Calling getUserID API with email: " + userEmail);
+        getUserID();
+        }, 1000);
+        return () => clearTimeout(timer);
+    }, []);
 
     const [profile, setProfile] = React.useState([]);
 
@@ -245,7 +319,7 @@ const UserDetails = () => {
                 profileCity: profileCity,
                 profileHeight: profileHeight,
                 profileWeight: profileWeight,
-                userID: 1,
+                userID: userID,
 
             })
         });
@@ -257,63 +331,12 @@ const UserDetails = () => {
     }
 
     const updateProfile = () => {
-        console.log("updateProdile was called");
+        console.log("updateProfile was called with userID: " + userID);
         callApiUpdateProfile()
             .then(res => {
-
+                console.log("updateProfile API finished");
             });
     }
-
-    React.useEffect(() => {
-        console.log("Calling getProfile API");
-        //getProfile();
-    }, []);
-
-
-    //run log details from getRuns API
-    const [runs, setRuns] = React.useState([]);
-
-    // API to return run 
-    const callApiGetRuns = async () => {
-        const url = serverURL + "/api/getRuns";
-
-        // waiting on response from api call of type POST which will be in the form of a json object
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                userID: 1, // In sprint 2 this will be set to the user ID
-            })
-        });
-
-        const body = await response.json();
-        if (response.status !== 200) throw Error(body.message);
-        console.log("Runs: ", body);
-        return body;
-    }
-
-    const getRuns = () => {
-        callApiGetRuns()
-            .then(res => {
-
-                //printing to console what was returned
-                console.log("getRuns API Returned: ", res);
-                var parsedRuns = JSON.parse(res.express);
-                console.log("Runs Parsed: ", parsedRuns);
-
-                // sets stateful variable movies to the value of the list parsedMovies
-
-                setRuns(parsedRuns);
-                console.log("Runs was set");
-            });
-    }
-
-    React.useEffect(() => {
-        console.log("Calling getRuns API");
-        getRuns();
-    }, []);
 
     const verifyInputs = () => {
         var anyErrors = false;
@@ -344,8 +367,7 @@ const UserDetails = () => {
 
         if (anyErrors == 0) {
             updateProfile();
-            //getProfile();
-            //history.push('/');
+            history.push('/');
         }
 
     }

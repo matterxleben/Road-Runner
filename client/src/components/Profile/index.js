@@ -20,6 +20,8 @@ import FormLabel from '@material-ui/core/FormLabel';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
+import { auth } from "../Firebase/firebase";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 
 //import gridTable from "/Users/abhinav/Documents/MSCI-342-Project_local/client/src/components/Profile/EmptyTableGrid.css";
 //import "/Users/abhinav/Documents/MSCI-342-Project_local/client/src/components/Profile/RunnerProfile.css"; // import CSS file
@@ -51,6 +53,97 @@ const serverURL = ''; //enable for dev mode
 const fetch = require('node-fetch');
 
 const Profile = () => {
+
+  // user info
+
+  var userEmail = "";
+  var tempID = 0;
+  const [userID, setUserID] = React.useState(0);
+
+  // add API to get user ID
+  const callApiUserID = async () => {
+    const url = serverURL + "/api/getUserID";
+    console.log("Email being passed into User ID API: " + userEmail);
+    // waiting on response from api call of type POST which will be in the form of a json object
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        userEmail: userEmail
+      })
+
+    });
+
+    const body = await response.json();
+    if (response.status !== 200) throw Error(body.message);
+    console.log("User ID: ", body);
+    return body;
+  };
+
+  const getUserID = () => {
+      callApiUserID()
+        .then(res => {
+          
+          //printing to console what was returned
+          console.log("getUserID API Returned: " + res);
+          var parsedID = JSON.parse(res.express);
+          console.log("User ID Parsed: ", parsedID);
+          var num = parsedID[0].userID;
+          setUserID(num);
+          tempID = num;
+          console.log("User ID (variable) is now Set To:" + userID);
+        });
+  }
+
+  // controlling the order in which APIs are called with useEffect hooks
+
+  React.useEffect(() => {
+    console.log("Firebase API called to check sign in");
+    var email = "";
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        console.log("Firebase returned email: " + user.email);
+        userEmail = user.email;
+        console.log("useEmail variable: " + userEmail);
+        console.log("USER IS LOGGED IN");
+        // ...
+      } else {
+        // User is signed out
+        console.log("USER IS NOT LOGGED IN");
+        history.push('/signIn');
+      }
+    });
+  }, []);  
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log("Calling getUserID API with email: " + userEmail);
+      getUserID();
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log("Calling getProfile API with userID: " + tempID);
+      // insert API here
+      getProfile();
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log("Calling getRuns API with userID: " + tempID);
+      // insert API here
+      getRuns();
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
   const [profile, setProfile] = React.useState([]);
 
   const heights = [
@@ -248,7 +341,7 @@ const Profile = () => {
         profileCity: profileCity,
         profileHeight: profileHeight,
         profileWeight: profileWeight,
-        userID: 1,
+        userID: userID,
       }),
     });
 
@@ -259,7 +352,7 @@ const Profile = () => {
   };
 
   const updateProfile = () => {
-    console.log('updateProdile was called');
+    console.log('updateProfile was called with User ID: ' + userID);
     callApiUpdateProfile().then(res => {});
   };
 
@@ -277,7 +370,7 @@ const Profile = () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        userID: 1, // In sprint 2 this will be set to the user ID
+        userID: tempID, // In sprint 2 this will be set to the user ID
       }),
     });
 
@@ -301,11 +394,6 @@ const Profile = () => {
     });
   };
 
-  React.useEffect(() => {
-    console.log('Calling getProfile API');
-    getProfile();
-  }, []);
-
   //run log details from getRuns API
   const [runs, setRuns] = React.useState([]);
 
@@ -320,7 +408,7 @@ const Profile = () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        userID: 1, // In sprint 2 this will be set to the user ID
+        userID: tempID, // In sprint 2 this will be set to the user ID
       }),
     });
 
@@ -343,11 +431,6 @@ const Profile = () => {
       console.log('Runs was set');
     });
   };
-
-  React.useEffect(() => {
-    console.log('Calling getRuns API');
-    getRuns();
-  }, []);
 
   const verifyInputs = () => {
     var anyErrors = false;
@@ -449,10 +532,29 @@ const Profile = () => {
     verifyInputs();
   };
 
+  const onSignOut = () => {
+    signOut(auth);
+    history.push('/signIn');
+  }
+
   return (
     <>
       <MuiThemeProvider theme={theme}>
         <SiteHeader />
+
+        <Box sx={{p: 2}}>
+          <Button
+            label
+            id="sign-out"
+            value="sign-out"
+            aria-label="signOut"
+            variant="outlined"
+            onClick={onSignOut}
+            data-testID="signout"
+          >
+            Sign Out
+          </Button>
+        </Box>
 
         <Box sx={{width: 1 / 2, p: 2}}>
           <div>

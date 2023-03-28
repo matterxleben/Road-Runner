@@ -179,7 +179,7 @@ const SignUp = () => {
                 // Signed in 
                 const user = userCredential.user;
                 console.log(user);
-                history.push('/signIn');
+                history.push('/userDetails');
             })
             .catch((error) => {
                 const errorCode = error.code;
