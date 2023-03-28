@@ -22,7 +22,7 @@
     "nodemon": "^2.0.16",
     "react-router-dom": "^6.3.0",
     "recompose": "^0.17.0",
-    "yarn": "^1.22.18"
+    "yarn": "^1.22.19"
   },
   "devDependencies": {
     "concurrently": "^7.1.0"

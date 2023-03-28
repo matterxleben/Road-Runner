@@ -41,13 +41,13 @@ const SiteHeader = () => {
             >
             Add Event
             </Button>
-            <Button
+            {/* <Button
             key={"AddFriend"}
             sx={{ my: 2, color: "black", display: "block" }}
             onClick={() => history.push('/AddFriend')}
             >
             Add Friend
-            </Button>
+            </Button> */}
             <Button
             key={"AddRun"}
             sx={{ my: 2, color: "black", display: "block" }}
@@ -55,13 +55,13 @@ const SiteHeader = () => {
             >
                 Add Run
             </Button>
-                          <Button
+                          {/* <Button
                               key={"FriendProfile"}
                               sx={{ my: 2, color: "black", display: "block" }}
                               onClick={() => history.push('/FriendProfile')}
                           >
                               Friend Profile
-            </Button>
+            </Button> */}
             <Button
             key={"Profile"}
             sx={{ my: 2, color: "black", display: "block", marginLeft: "auto"}}
