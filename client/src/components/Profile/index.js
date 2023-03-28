@@ -21,7 +21,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import { auth } from "../Firebase/firebase";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 
 //import gridTable from "/Users/abhinav/Documents/MSCI-342-Project_local/client/src/components/Profile/EmptyTableGrid.css";
 //import "/Users/abhinav/Documents/MSCI-342-Project_local/client/src/components/Profile/RunnerProfile.css"; // import CSS file
@@ -131,7 +131,7 @@ const Profile = () => {
       console.log("Calling getProfile API with userID: " + tempID);
       // insert API here
       getProfile();
-    }, 2000);
+    }, 1500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -140,7 +140,7 @@ const Profile = () => {
       console.log("Calling getRuns API with userID: " + tempID);
       // insert API here
       getRuns();
-    }, 2000);
+    }, 1500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -532,10 +532,29 @@ const Profile = () => {
     verifyInputs();
   };
 
+  const onSignOut = () => {
+    signOut(auth);
+    history.push('/signIn');
+  }
+
   return (
     <>
       <MuiThemeProvider theme={theme}>
         <SiteHeader />
+
+        <Box sx={{p: 2}}>
+          <Button
+            label
+            id="sign-out"
+            value="sign-out"
+            aria-label="signOut"
+            variant="outlined"
+            onClick={onSignOut}
+            data-testID="signout"
+          >
+            Sign Out
+          </Button>
+        </Box>
 
         <Box sx={{width: 1 / 2, p: 2}}>
           <div>
