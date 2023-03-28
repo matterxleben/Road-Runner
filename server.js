@@ -488,8 +488,15 @@ app.post('/api/addFriend', (req, res) => {
 
 	let connection = mysql.createConnection(config);
 
-	let sql = `INSERT INTO eventUser (userID, eventID) SELECT ?, event.eventID FROM event WHERE event.userFriends LIKE ?;`;
-	let data = [friendID, currentUserID];
+	let sql = `INSERT INTO eventUser (userID, eventID)
+SELECT ?, event.eventID
+FROM event
+WHERE event.userFriends LIKE ?
+UNION ALL
+SELECT ?, event.eventID
+FROM event
+WHERE event.userFriends LIKE ?;`;
+	let data = [friendID, currentUserID, currentUserID, friendID];
 
 	console.log(sql);
 	console.log(data);
