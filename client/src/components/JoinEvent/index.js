@@ -21,6 +21,8 @@ import Select from '@material-ui/core/Select';
 import history from '../Navigation/history';
 import { Alert, AlertTitle } from '@mui/material';
 import Modal from '@mui/material/Modal';
+import { auth } from "../Firebase/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 //Dev mode
 const serverURL = ""; //enable for dev mode
@@ -35,6 +37,87 @@ const serverURL = ""; //enable for dev mode
 const fetch = require("node-fetch");
 
 const JoinEvent = () => {
+
+  // user info
+
+  var userEmail = "";
+  var tempID = 0;
+  const [userID, setUserID] = React.useState(0);
+
+  // add API to get user ID
+  const callApiUserID = async () => {
+    const url = serverURL + "/api/getUserID";
+    console.log("Email being passed into User ID API: " + userEmail);
+    // waiting on response from api call of type POST which will be in the form of a json object
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        userEmail: userEmail
+      })
+
+    });
+
+    const body = await response.json();
+    if (response.status !== 200) throw Error(body.message);
+    console.log("User ID: ", body);
+    return body;
+  };
+
+  const getUserID = () => {
+      callApiUserID()
+        .then(res => {
+          
+          //printing to console what was returned
+          console.log("getUserID API Returned: " + res);
+          var parsedID = JSON.parse(res.express);
+          console.log("User ID Parsed: ", parsedID);
+          var num = parsedID[0].userID;
+          setUserID(num);
+          tempID = num;
+          console.log("User ID (variable) is now Set To:" + userID);
+        });
+  }
+
+  // controlling the order in which APIs are called with useEffect hooks
+
+  React.useEffect(() => {
+    console.log("Firebase API called to check sign in");
+    var email = "";
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        console.log("Firebase returned email: " + user.email);
+        userEmail = user.email;
+        console.log("useEmail variable: " + userEmail);
+        console.log("USER IS LOGGED IN");
+        // ...
+      } else {
+        // User is signed out
+        console.log("USER IS NOT LOGGED IN");
+        history.push('/signIn');
+      }
+    });
+  }, []);  
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log("Calling getUserID API with email: " + userEmail);
+      getUserID();
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log("Calling getEvents API with " + tempID);
+      // insert API here
+      getEvents();
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Stateful variable for list of events which will be returned from getEvents API
 
@@ -52,7 +135,7 @@ const JoinEvent = () => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        userID: 1, // In sprint 2 this will be set to the user ID
+        userID: tempID, // In sprint 2 this will be set to the user ID
       })
     });
 
@@ -76,11 +159,6 @@ const JoinEvent = () => {
       });
   }
 
-  React.useEffect(() => {
-    console.log("Calling getEvents API");
-    getEvents();
-  }, []);
-
   // Stateful variables for selected event from dropdown and its ID
   const [selectedEvent, setSelectedEvent] = React.useState();
 
@@ -97,6 +175,7 @@ const JoinEvent = () => {
 
   const callApiJoinEvent = async () => {
     const url = serverURL + "/api/joinEvent";
+    console.log("Join Event API called with userID: " + userID + " and eventID " + eventID);
 
     // waiting on response from api call of type POST which will be in the form of a json object
     const response = await fetch(url, {
@@ -105,7 +184,7 @@ const JoinEvent = () => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        userID: 1, // In sprint 2 this will be set to the user ID
+        userID: userID, // In sprint 2 this will be set to the user ID
         eventID: eventID
       })
     });

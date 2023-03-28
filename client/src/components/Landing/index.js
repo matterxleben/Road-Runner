@@ -34,7 +34,7 @@ import { BrowserRouter as Router, Route, Switch, useHistory, useParams } from 'r
 import { Link } from "react-router-dom";
 import  useState from 'react';
 import { auth } from "../Firebase/firebase";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 
 
 
@@ -75,21 +75,50 @@ const Landing = (props) => {
     if (response.status !== 200) throw Error(body.message);
     console.log("User ID: ", body);
     return body;
-};
+  };
 
-const getUserID = () => {
-    callApiUserID()
-      .then(res => {
-        
-        //printing to console what was returned
-        console.log("getUserID API Returned: " + res);
-        var parsedID = JSON.parse(res.express);
-        console.log("User ID Parsed: ", parsedID);
-        var num = parsedID[0].userID;
-        userID = num;
-        console.log("User ID (variable) is now Set To:" + userID);
-      });
-}
+  const getUserID = () => {
+      callApiUserID()
+        .then(res => {
+          
+          //printing to console what was returned
+          console.log("getUserID API Returned: " + res);
+          var parsedID = JSON.parse(res.express);
+          console.log("User ID Parsed: ", parsedID);
+          var num = parsedID[0].userID;
+          userID = num;
+          console.log("User ID (variable) is now Set To:" + userID);
+        });
+  }
+
+  // controlling the order in which APIs are called with useEffect hooks
+
+  React.useEffect(() => {
+    console.log("Firebase API called to check sign in");
+    var email = "";
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        console.log("Firebase returned email: " + user.email);
+        userEmail = user.email;
+        console.log("useEmail variable: " + userEmail);
+        console.log("USER IS LOGGED IN");
+        // ...
+      } else {
+        // User is signed out
+        console.log("USER IS NOT LOGGED IN");
+        history.push('/signIn');
+      }
+    });
+  }, []);  
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log("Calling getUserID API with email: " + userEmail);
+      getUserID();
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
     
 
     const handleClickName = (item) => {
@@ -358,34 +387,7 @@ const displayEventRunLog = () => {
     }
   };
 
-  // controlling the order in which APIs are called with useEffect hooks
-
-  React.useEffect(() => {
-    console.log("Firebase API called to check sign in");
-    var email = "";
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // User is signed in, see docs for a list of available properties
-        console.log("Firebase returned email: " + user.email);
-        userEmail = user.email;
-        console.log("useEmail variable: " + userEmail);
-        console.log("USER IS LOGGED IN");
-        // ...
-      } else {
-        // User is signed out
-        console.log("USER IS NOT LOGGED IN");
-        history.push('/signIn');
-      }
-    });
-  }, []);  
-
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      console.log("Calling getUserID API with email: " + userEmail);
-      getUserID();
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
+  
 
   React.useEffect(() => {
     const timer = setTimeout(() => {
