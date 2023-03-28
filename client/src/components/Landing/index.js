@@ -53,7 +53,8 @@ const fetch = require("node-fetch");
 const Landing = (props) => {
 
   var userEmail = "";
-  var userID = 0;
+  var tempID = 0;
+  const [userID, setUserID] = React.useState(0);
 
   // add API to get user ID
   const callApiUserID = async () => {
@@ -86,8 +87,9 @@ const Landing = (props) => {
           var parsedID = JSON.parse(res.express);
           console.log("User ID Parsed: ", parsedID);
           var num = parsedID[0].userID;
-          userID = num;
-          console.log("User ID (variable) is now Set To:" + userID);
+          tempID = num;
+          setUserID(num);
+          console.log("User ID (variable) is now Set To:" + tempID);
         });
   }
 
@@ -175,7 +177,7 @@ const Landing = (props) => {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                userID: userID, // In sprint 2 this will be set to the user ID
+                userID: tempID, // In sprint 2 this will be set to the user ID
             })
         });
 
@@ -214,7 +216,7 @@ const Landing = (props) => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        userID: userID, // In sprint 2 this will be set to the user ID
+        userID: tempID, // In sprint 2 this will be set to the user ID
       })
     });
 
