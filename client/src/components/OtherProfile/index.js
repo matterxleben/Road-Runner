@@ -48,12 +48,11 @@ const serverURL = ''; //enable for dev mode
 
 const fetch = require('node-fetch');
 
-const FriendProfile = () => {
+const OtherProfile = () => {
 
     const location = useLocation();
     const selectedFriend = location.state.selectedFriend || location.state.item;
 
-    console.log("i think i did it: ", selectedFriend);
 
     //profile details from getProfile API
     const [currentProfile, setCurrentProfile] = React.useState([]);
@@ -141,7 +140,42 @@ const FriendProfile = () => {
         getRuns();
     }, []);
 
-    
+    const onClickDisplay = () => {
+        addFriend();
+    };
+
+    //api to add friend
+    const callApiAddFriend = async () => {
+        console.log("i think i did it: other1 ", selectedFriend);
+        const url = serverURL + "/api/addFriend";
+
+        // waiting on response from api call of type POST which will be in the form of a json object
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                currentUserID: 1, // In sprint 2 this will be set to the actual user
+                friendID: selectedFriend
+            })
+        });
+        console.log("add friend in api call");
+
+        const body = await response.json();
+        console.log("add friend check response");
+        if (response.status !== 200) throw Error(body.message);
+        console.log("Friend Added Status: ", body);
+        return body;
+    }
+
+    const addFriend = () => {
+        console.log("add friend button pressed");
+        callApiAddFriend()
+            .then(res => {
+                console.log("add friend api called");
+            });
+    }
 
     return (
         <>
@@ -149,7 +183,13 @@ const FriendProfile = () => {
                 <SiteHeader />
 
                 <Box sx={{ width: 1 / 2, p: 2 }}>
-                 
+                    <Grid item xs={3}>
+                        <Box sx={{ p: 2 }}>
+                            <Button variant="outlined" onClick={onClickDisplay}>
+                                <b>ADD FRIEND</b>
+                            </Button>
+                        </Box>
+                    </Grid>
 
                     <div>
                         {' '}
@@ -269,4 +309,4 @@ const FriendProfile = () => {
     );
 };
 
-export default FriendProfile;
+export default OtherProfile;

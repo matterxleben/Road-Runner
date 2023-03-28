@@ -50,6 +50,21 @@ const fetch = require("node-fetch");
 
 const Landing = (props) => {
 
+    
+
+    const handleClickName = (item) => {
+        if (friendsLanding.some(element => element.userID === item)) {
+            // code to execute if any element in friendsLanding has userID equal to x
+           
+
+            history.push('/FriendProfile/', { item });
+        } else {
+            // code to execute if no element in friendsLanding has userID equal to x
+
+            history.push('/OtherProfile/', { item });
+        }
+    }
+
 
     // Stateful variables for selected friend and their ID
     const [selectedFriend, setSelectedFriend] = React.useState();
@@ -60,9 +75,8 @@ const Landing = (props) => {
     const history = useHistory();
 
     const handleUserClick = (event) => {
-        console.log("button pressed user ID: ", selectedFriend);
-        //history.push(`/users/${userId}`);
-        history.push('/FriendProfile/', {selectedFriend});
+        history.push('/FriendProfile/', { selectedFriend });
+
 
     };
 
@@ -409,7 +423,7 @@ const displayEventRunLog = () => {
         </Grid>
                     <Grid item xs={3}>
                         <Box sx={{ p: 2 }}>
-                            <Button variant="outlined" onClick={handleUserClick}> Friend's Profile</Button>
+                            <Button variant="outlined" onClick={handleUserClick}  > Friend's Profile</Button>
                         </Box>
                     </Grid>
       </Grid>
@@ -465,7 +479,7 @@ const displayEventRunLog = () => {
             <TableBody>
               {displayEventLeaderboardData.sort(sortLeaderboardData).map((row) => (
                 <TableRow key={row.name}>
-                  <TableCell>{row.name}</TableCell>
+                      <TableCell><button onClick={() => handleClickName(row.userID)}>{row.name}</button></TableCell>
                   <TableCell>{row.total_distance}</TableCell>
                   <TableCell>{row.number_of_runs}</TableCell>
                   <TableCell>{row.min_pace}</TableCell>
