@@ -482,6 +482,42 @@ app.post('/api/addFriend', (req, res) => {
 });
 
 
+//API to get users that current user is not friends with
+app.post('/api/getUsers', (req, res) => {
+	let userID = req.body.userID;
+
+	//create connection to sql, declare query in string
+	let connection = mysql.createConnection(config);
+	let sql = `SELECT u.userID, u.name
+FROM user u
+WHERE u.userID NOT IN (
+    SELECT eu.userID
+    FROM eventUser eu
+    WHERE eu.eventID = (
+        SELECT e.eventID
+        FROM event e
+        WHERE e.userFriends LIKE ?
+    )
+);`;
+	console.log(sql);
+	let data = [userID];
+
+	// connecting to sql and using the query variable, turning data into JSON object and sending back as res
+	connection.query(sql, data, (error, results, fields) => {
+		if (error) {
+			return console.error(error.message)
+		}
+
+		let string = JSON.stringify(results);
+
+		console.log(string);
+
+		res.send({ express: string });
+	});
+	connection.end();
+});
+
+
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
 //app.listen(port, '172.31.31.77'); //for the deployed version, specify the IP address of the server
