@@ -11,7 +11,8 @@ import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
 import TextField from "@mui/material/TextField";
 import { MuiThemeProvider } from "@material-ui/core/styles";
 import theme from '../Theme';
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../Firebase/firebase";
 import { Alert, AlertTitle } from '@mui/material';
 import Modal from '@mui/material/Modal';
 
@@ -68,7 +69,7 @@ const SignUp = () => {
 
     // Need to add function to verify passwords are correct, if not pop up modal
     const verifyPassword = () => {
-        return userPassword === userPasswordConfirmation;
+        return userPassword === userPasswordConfirmation && userPassword !== "" && userPasswordConfirmation !== "";
     }
 
     // add API to pass new users password and email to backend, called on clicking sign up after password has been verified
@@ -170,9 +171,9 @@ const SignUp = () => {
 
     const onSignUp = async (e) => {
         e.preventDefault();
-
-        if (verifyPassword() ) {
-            /*
+        e.preventDefault();
+        
+        if (verifyPassword()) {
             createUserWithEmailAndPassword(auth, userEmail, userPassword)
             .then((userCredential) => {
                 // Signed in 
@@ -185,10 +186,7 @@ const SignUp = () => {
                 const errorMessage = error.message;
                 console.log(errorCode, errorMessage);
             });
-            */
             addUser();
-            
-            history.push('/signIn');
         } else {
             handleOpenPasswordError();
         }
