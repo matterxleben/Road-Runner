@@ -11,11 +11,95 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
+import { auth } from "../Firebase/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 //Dev mode
 const serverURL = ''; //enable for dev mode
 
 const AddRun = () => {
+
+  // user info
+
+  var userEmail = "";
+  var tempID = 0;
+  const [userID, setUserID] = React.useState(0);
+
+  // add API to get user ID
+  const callApiUserID = async () => {
+    const url = serverURL + "/api/getUserID";
+    console.log("Email being passed into User ID API: " + userEmail);
+    // waiting on response from api call of type POST which will be in the form of a json object
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        userEmail: userEmail
+      })
+
+    });
+
+    const body = await response.json();
+    if (response.status !== 200) throw Error(body.message);
+    console.log("User ID: ", body);
+    return body;
+  };
+
+  const getUserID = () => {
+      callApiUserID()
+        .then(res => {
+          
+          //printing to console what was returned
+          console.log("getUserID API Returned: " + res);
+          var parsedID = JSON.parse(res.express);
+          console.log("User ID Parsed: ", parsedID);
+          var num = parsedID[0].userID;
+          setUserID(num);
+          tempID = num;
+          console.log("User ID (variable) is now Set To:" + userID);
+        });
+  }
+
+  // controlling the order in which APIs are called with useEffect hooks
+
+  React.useEffect(() => {
+    console.log("Firebase API called to check sign in");
+    var email = "";
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        console.log("Firebase returned email: " + user.email);
+        userEmail = user.email;
+        console.log("useEmail variable: " + userEmail);
+        console.log("USER IS LOGGED IN");
+        // ...
+      } else {
+        // User is signed out
+        console.log("USER IS NOT LOGGED IN");
+        history.push('/signIn');
+      }
+    });
+  }, []);  
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log("Calling getUserID API with email: " + userEmail);
+      getUserID();
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log("Calling getEvents API with userID: " + tempID);
+      // insert API here
+      getEventsLanding();
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
   // Stateful variable for list of events which will be returned from getEventsLanding API
   const [events, setEvents] = React.useState([]);
 
@@ -30,7 +114,7 @@ const AddRun = () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        userID: 1, // In sprint 2 this will be set to the user ID
+        userID: tempID, // In sprint 2 this will be set to the user ID
       }),
     });
 
@@ -113,7 +197,7 @@ const AddRun = () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        userID: 1, // In sprint 2 this will be set to the actual user
+        userID: userID,
         nameRun: nameRun,
         runDescription: runDescription,
         runTime: runTime,
@@ -134,7 +218,8 @@ const AddRun = () => {
   const addRun = () => {
     callApiAddRun()
       .then(res => {
-  
+        console.log("Add Run API finished");
+        history.push('/');
       });
     }
 
@@ -177,8 +262,8 @@ const AddRun = () => {
     //   alert('Please fill in all fields');
     //   return;
     // } else
+    console.log("Add Run API being called with userID: " + userID);
     addRun();
-    history.push('/');
   };
 
   // When cancelled, need to return to home
@@ -222,7 +307,7 @@ const AddRun = () => {
           <TextField
             fullWidth
             id="run-time"
-            label="Total Time (HH:MM:SS:MS)"
+            label="Total Time (HHMMSSMS)"
             variant="standard"
             value={runTime}
             onChange={handleRunTime}
