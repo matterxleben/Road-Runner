@@ -135,6 +135,35 @@ const SignUp = () => {
             // setUserID(num);
             userID = num;
             console.log("User ID (variable) is now Set To:" + userID);
+            addUserEvent();
+          });
+    }
+
+    // add API to pass new users password and email to backend, called on clicking sign up after password has been verified
+    const callApiAddUserEvent = async () => {
+        const url = serverURL + "/api/addUserEvent";
+    
+        // waiting on response from api call of type POST which will be in the form of a json object
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            userID: userID
+          })
+        });
+    
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        console.log("User Event Added Status: ", body);
+        return body;
+    };
+    
+    const addUserEvent = () => {
+        callApiAddUserEvent()
+          .then(res => {
+            console.log("Complete user addition process is complete!");
           });
     }
 
